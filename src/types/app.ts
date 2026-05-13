@@ -15,6 +15,19 @@ export type MedicationInsert =
 export type MedicationUpdate =
   Database["public"]["Tables"]["medications"]["Update"];
 
+export type Reminder = Database["public"]["Tables"]["reminders"]["Row"];
+export type ReminderInsert =
+  Database["public"]["Tables"]["reminders"]["Insert"];
+export type ReminderUpdate =
+  Database["public"]["Tables"]["reminders"]["Update"];
+
+export type NotificationPreferences =
+  Database["public"]["Tables"]["notification_preferences"]["Row"];
+export type NotificationPreferencesInsert =
+  Database["public"]["Tables"]["notification_preferences"]["Insert"];
+export type NotificationPreferencesUpdate =
+  Database["public"]["Tables"]["notification_preferences"]["Update"];
+
 /** Nível de 0–10 usado em escalas de sintoma */
 export type SymptomLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 
@@ -28,7 +41,7 @@ export type DailyLogFormData = {
   notes: string;
 };
 
-/** Resumo semanal calculado para o dashboard */
+/** Resumo semanal calculado na camada de aplicação */
 export type WeeklySummary = {
   avg_pain: number | null;
   avg_fatigue: number | null;
@@ -36,4 +49,9 @@ export type WeeklySummary = {
   avg_mood: number | null;
   avg_anxiety: number | null;
   days_logged: number;
+};
+
+/** Reminder com nome do medicamento — derivado por join em application code */
+export type ReminderWithMedication = Reminder & {
+  medicationName: string;
 };

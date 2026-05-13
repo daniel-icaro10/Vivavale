@@ -1,6 +1,7 @@
 /**
- * Tipos gerados do schema Supabase.
- * Substituir pelo output do `npx supabase gen types typescript` após configurar o projeto Supabase.
+ * Tipos do schema Supabase — VivaLeve.
+ * Sincronizado com migrations 001 + 002 + 003.
+ * Substituir pelo output de `npx supabase gen types typescript` após configurar o projeto.
  */
 export type Database = {
   public: {
@@ -11,6 +12,7 @@ export type Database = {
           name: string;
           age: number | null;
           diagnosis: string | null;
+          timezone: string;
           created_at: string;
           updated_at: string;
         };
@@ -19,12 +21,15 @@ export type Database = {
           name: string;
           age?: number | null;
           diagnosis?: string | null;
+          timezone?: string;
         };
         Update: {
           name?: string;
           age?: number | null;
           diagnosis?: string | null;
+          timezone?: string;
         };
+        Relationships: [];
       };
       daily_logs: {
         Row: {
@@ -38,6 +43,7 @@ export type Database = {
           anxiety_level: number;
           notes: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
@@ -58,6 +64,7 @@ export type Database = {
           anxiety_level?: number;
           notes?: string | null;
         };
+        Relationships: [];
       };
       medications: {
         Row: {
@@ -65,28 +72,114 @@ export type Database = {
           user_id: string;
           name: string;
           dosage: string | null;
-          schedule: string | null;
+          frequency: string | null;
+          start_date: string | null;
+          active: boolean;
           notes: string | null;
           created_at: string;
+          updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           name: string;
           dosage?: string | null;
-          schedule?: string | null;
+          frequency?: string | null;
+          start_date?: string | null;
+          active?: boolean;
           notes?: string | null;
         };
         Update: {
           name?: string;
           dosage?: string | null;
-          schedule?: string | null;
+          frequency?: string | null;
+          start_date?: string | null;
+          active?: boolean;
           notes?: string | null;
         };
+        Relationships: [];
+      };
+      reminders: {
+        Row: {
+          id: string;
+          user_id: string;
+          medication_id: string;
+          // PostgreSQL time type: retornado como "HH:MM:SS" pelo Supabase client.
+          // Normalizar para "HH:MM" antes de usar no frontend.
+          time_local: string;
+          timezone: string;
+          recurrence: "daily" | "weekdays" | "custom_future";
+          active: boolean;
+          last_sent_at: string | null;
+          next_trigger_at: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          medication_id: string;
+          time_local: string;
+          timezone: string;
+          recurrence?: "daily" | "weekdays" | "custom_future";
+          active?: boolean;
+          last_sent_at?: string | null;
+          next_trigger_at?: string | null;
+        };
+        Update: {
+          medication_id?: string;
+          time_local?: string;
+          timezone?: string;
+          recurrence?: "daily" | "weekdays" | "custom_future";
+          active?: boolean;
+          last_sent_at?: string | null;
+          next_trigger_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "reminders_user_id_fkey";
+            columns: ["user_id"];
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reminders_medication_id_fkey";
+            columns: ["medication_id"];
+            referencedRelation: "medications";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      notification_preferences: {
+        Row: {
+          user_id: string;
+          reminders_enabled: boolean;
+          // PostgreSQL time type: "HH:MM:SS" ou null.
+          quiet_hours_start: string | null;
+          quiet_hours_end: string | null;
+          timezone: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          user_id: string;
+          reminders_enabled?: boolean;
+          quiet_hours_start?: string | null;
+          quiet_hours_end?: string | null;
+          timezone?: string;
+        };
+        Update: {
+          reminders_enabled?: boolean;
+          quiet_hours_start?: string | null;
+          quiet_hours_end?: string | null;
+          timezone?: string;
+        };
+        Relationships: [];
       };
     };
-    Views: Record<string, never>;
-    Functions: Record<string, never>;
-    Enums: Record<string, never>;
+    Views: { [_ in never]: never };
+    Functions: { [_ in never]: never };
+    Enums: { [_ in never]: never };
+    CompositeTypes: { [_ in never]: never };
   };
 };

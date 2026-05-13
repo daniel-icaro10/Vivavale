@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
+import { env } from "@/lib/env";
 import {
   loginSchema,
   registerSchema,
@@ -85,13 +86,10 @@ export async function resetPasswordAction(
   const parsed = resetPasswordSchema.safeParse(data);
   if (!parsed.success) return { error: "E-mail inválido." };
 
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
     parsed.data.email,
-    { redirectTo: `${siteUrl}/auth/callback` },
+    { redirectTo: `${env.siteUrl}/auth/callback` },
   );
 
   if (error) return { error: mapAuthError(error.message) };

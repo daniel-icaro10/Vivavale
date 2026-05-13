@@ -12,7 +12,7 @@ export function DailyLogHeader({ date, hasExistingLog }: DailyLogHeaderProps) {
 
   return (
     <div>
-      <p className="mb-1 text-sm capitalize text-muted-foreground">
+      <p className="mb-1 text-sm capitalize text-muted-foreground" suppressHydrationWarning>
         {formatted}
       </p>
       <h1 className="text-2xl font-semibold tracking-tight">

@@ -1,22 +1,41 @@
 import type { Metadata } from "next";
+import { createServerClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
+import { MedicationList } from "@/features/medications/components/MedicationList";
+import type { Medication } from "@/types/app";
 
 export const metadata: Metadata = {
   title: "Remédios",
 };
 
-export default function MedicationsPage() {
+async function getMedications(): Promise<Medication[]> {
+  const supabase = await createServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
+  const { data } = await supabase
+    .from("medications")
+    .select("*")
+    .eq("user_id", user.id)
+    .order("active", { ascending: false })
+    .order("created_at", { ascending: false });
+
+  return data ?? [];
+}
+
+export default async function MedicationsPage() {
+  const medications = await getMedications();
+
   return (
     <>
       <PageHeader
         title="Remédios"
-        description="Seus medicamentos e horários"
+        description="Seus medicamentos em um só lugar"
       />
-
-      {/* MedicationList será implementado na Fase 8 */}
-      <div className="rounded-lg border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-        Lista de remédios em construção
-      </div>
+      <MedicationList medications={medications} />
     </>
   );
 }

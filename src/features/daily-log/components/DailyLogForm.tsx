@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import type { DailyLog } from "@/types/app";
 import { saveDailyLogAction } from "../actions";
@@ -63,7 +64,7 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<DailyLogFormData>({
     resolver: zodResolver(dailyLogSchema),
@@ -78,7 +79,7 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
     },
   });
 
-  const values = watch();
+  const values = useWatch({ control });
 
   useEffect(() => {
     if (saveStatus !== "success") return;
@@ -89,12 +90,17 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   const onSubmit = async (data: DailyLogFormData) => {
     setSaveStatus("saving");
     setErrorMessage(undefined);
-    const result = await saveDailyLogAction(data);
-    if ("error" in result) {
+    try {
+      const result = await saveDailyLogAction(data);
+      if ("error" in result) {
+        setSaveStatus("error");
+        setErrorMessage(result.error);
+      } else {
+        setSaveStatus("success");
+      }
+    } catch {
       setSaveStatus("error");
-      setErrorMessage(result.error);
-    } else {
-      setSaveStatus("success");
+      setErrorMessage("Não foi possível salvar. Tente novamente.");
     }
   };
 
@@ -163,7 +169,7 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
           rows={4}
           maxLength={1000}
           aria-invalid={!!errors.notes}
-          className="resize-none leading-relaxed"
+          className="resize-none leading-relaxed px-3.5 py-3"
           {...register("notes")}
         />
         {errors.notes && (
@@ -180,11 +186,16 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
           disabled={isSubmitting}
           className="h-11 w-full"
         >
-          {isSubmitting
-            ? "Anotando..."
-            : hasExistingLog
-              ? "Atualizar registro"
-              : "Salvar registro"}
+          {isSubmitting ? (
+            <>
+              <Spinner />
+              Anotando...
+            </>
+          ) : hasExistingLog ? (
+            "Atualizar registro"
+          ) : (
+            "Salvar registro"
+          )}
         </Button>
       </div>
     </form>

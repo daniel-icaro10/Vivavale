@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, History, Pill, User } from "lucide-react";
+import { Home, ClipboardList, History, Pill, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -10,7 +10,7 @@ const navItems = [
   { href: "/daily", label: "Registrar", icon: ClipboardList },
   { href: "/history", label: "Histórico", icon: History },
   { href: "/medications", label: "Remédios", icon: Pill },
-  { href: "/profile", label: "Perfil", icon: User },
+  { href: "/reminders", label: "Lembretes", icon: Bell },
 ];
 
 export function BottomNav() {
@@ -19,7 +19,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom)]"
     >
       <ul className="flex items-stretch">
         {navItems.map(({ href, label, icon: Icon }) => {

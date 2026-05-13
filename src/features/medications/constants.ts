@@ -1,0 +1,4 @@
+export const MEDICATION_NAME_MAX = 120;
+export const MEDICATION_DOSAGE_MAX = 80;
+export const MEDICATION_FREQUENCY_MAX = 80;
+export const MEDICATION_NOTES_MAX = 1000;

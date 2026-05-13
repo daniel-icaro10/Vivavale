@@ -23,6 +23,33 @@ export const metadata: Metadata = {
   description:
     "Acompanhamento gentil para pessoas com fibromialgia e dores crônicas.",
   applicationName: "VivaLeve",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "VivaLeve",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    siteName: "VivaLeve",
+    title: "VivaLeve",
+    description:
+      "Acompanhamento gentil para pessoas com fibromialgia e dores crônicas.",
+    locale: "pt_BR",
+  },
+  twitter: {
+    card: "summary",
+    title: "VivaLeve",
+    description:
+      "Acompanhamento gentil para pessoas com fibromialgia e dores crônicas.",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
