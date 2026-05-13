@@ -11,40 +11,98 @@ import { saveDailyLogAction } from "../actions";
 import { dailyLogSchema, type DailyLogFormData } from "../schemas";
 import type { SaveStatus } from "../types";
 import { DailyLogHeader } from "./DailyLogHeader";
-import { FormSection } from "./FormSection";
 import { SaveIndicator } from "./SaveIndicator";
 
-const SYMPTOM_FIELDS = [
+// Grupos emocionais — reduz carga cognitiva, cria narrativa visual
+const PHYSICAL_FIELDS = [
   {
     key: "pain_level" as const,
     label: "Dor",
-    description: "Sem dor — Insuportável",
+    low: "Sem dor",
+    high: "Intensa",
   },
   {
     key: "fatigue_level" as const,
     label: "Fadiga",
-    description: "Descansado — Exausto",
+    low: "Descansado",
+    high: "Exausto",
   },
+] as const;
+
+const WELLBEING_FIELDS = [
   {
     key: "sleep_quality" as const,
     label: "Sono",
-    description: "Péssimo — Ótimo",
+    low: "Péssimo",
+    high: "Ótimo",
   },
   {
     key: "mood_level" as const,
     label: "Humor",
-    description: "Muito baixo — Muito bem",
+    low: "Muito baixo",
+    high: "Muito bem",
   },
   {
     key: "anxiety_level" as const,
     label: "Ansiedade",
-    description: "Calmo — Intensa",
+    low: "Calmo",
+    high: "Intensa",
   },
 ] as const;
 
-// sv-SE locale always yields YYYY-MM-DD format (user's local date)
 function toLocalDateString(date: Date): string {
   return date.toLocaleDateString("sv-SE");
+}
+
+function SliderField({
+  fieldKey,
+  label,
+  low,
+  high,
+  value,
+  register,
+}: {
+  fieldKey: string;
+  label: string;
+  low: string;
+  high: string;
+  value: number;
+  register: ReturnType<typeof useForm<DailyLogFormData>>["register"];
+}) {
+  const pct = `${Math.round((value / 10) * 100)}%`;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <label
+          htmlFor={fieldKey}
+          className="text-sm font-medium text-foreground"
+        >
+          {label}
+        </label>
+        <span
+          className="min-w-[2rem] text-right text-base font-semibold tabular-nums text-primary"
+          aria-hidden="true"
+        >
+          {value}
+        </span>
+      </div>
+      <input
+        id={fieldKey}
+        type="range"
+        min={0}
+        max={10}
+        step={1}
+        style={{ "--vl-pct": pct } as React.CSSProperties}
+        className="vl-slider"
+        {...register(fieldKey as keyof DailyLogFormData, { valueAsNumber: true })}
+      />
+      <div className="flex justify-between">
+        <span className="text-[11px] text-muted-foreground">{low}</span>
+        <span className="text-[11px] text-muted-foreground">{high}</span>
+      </div>
+    </div>
+  );
 }
 
 interface DailyLogFormProps {
@@ -55,7 +113,6 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   const today = new Date();
   const todayStr = toLocalDateString(today);
 
-  // Compare using the client's local date so timezone is always correct
   const initialLog = recentLog?.date === todayStr ? recentLog : null;
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
@@ -70,10 +127,10 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
     resolver: zodResolver(dailyLogSchema),
     defaultValues: {
       date: todayStr,
-      pain_level: initialLog?.pain_level ?? 5,
+      pain_level:    initialLog?.pain_level    ?? 5,
       fatigue_level: initialLog?.fatigue_level ?? 5,
       sleep_quality: initialLog?.sleep_quality ?? 5,
-      mood_level: initialLog?.mood_level ?? 5,
+      mood_level:    initialLog?.mood_level    ?? 5,
       anxiety_level: initialLog?.anxiety_level ?? 5,
       notes: initialLog?.notes ?? "",
     },
@@ -112,84 +169,108 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
 
       <input type="hidden" {...register("date")} />
 
-      <div className="space-y-6">
-        {SYMPTOM_FIELDS.map(({ key, label, description }) => {
-          const value = values[key] ?? 5;
-          const pct = `${Math.round((value / 10) * 100)}%`;
+      {/* Grupo 1 — Sintomas físicos */}
+      <section aria-labelledby="physical-group" className="space-y-5">
+        <h2
+          id="physical-group"
+          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
+        >
+          Sintomas físicos
+        </h2>
+        <div
+          className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
+          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+        >
+          {PHYSICAL_FIELDS.map(({ key, label, low, high }) => (
+            <SliderField
+              key={key}
+              fieldKey={key}
+              label={label}
+              low={low}
+              high={high}
+              value={values[key] ?? 5}
+              register={register}
+            />
+          ))}
+        </div>
+      </section>
 
-          return (
-            <FormSection key={key}>
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <label
-                    htmlFor={key}
-                    className="text-sm font-medium text-foreground"
-                  >
-                    {label}
-                  </label>
-                  <p className="text-xs text-muted-foreground">{description}</p>
-                </div>
-                <span
-                  className="shrink-0 min-w-8 text-right text-base font-semibold tabular-nums text-primary"
-                  aria-hidden="true"
-                >
-                  {value}
-                </span>
-              </div>
-              <input
-                id={key}
-                type="range"
-                min={0}
-                max={10}
-                step={1}
-                style={{ "--vl-pct": pct } as React.CSSProperties}
-                className="vl-slider"
-                {...register(key, { valueAsNumber: true })}
-              />
-            </FormSection>
-          );
-        })}
-      </div>
+      {/* Grupo 2 — Bem-estar */}
+      <section aria-labelledby="wellbeing-group" className="space-y-5">
+        <h2
+          id="wellbeing-group"
+          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
+        >
+          Bem-estar
+        </h2>
+        <div
+          className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
+          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+        >
+          {WELLBEING_FIELDS.map(({ key, label, low, high }) => (
+            <SliderField
+              key={key}
+              fieldKey={key}
+              label={label}
+              low={low}
+              high={high}
+              value={values[key] ?? 5}
+              register={register}
+            />
+          ))}
+        </div>
+      </section>
 
-      <FormSection>
-        <div>
+      {/* Anotações */}
+      <section aria-labelledby="notes-group" className="space-y-5">
+        <h2
+          id="notes-group"
+          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
+        >
+          Anotações
+        </h2>
+        <div
+          className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-2"
+          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+        >
           <label
             htmlFor="notes"
             className="text-sm font-medium text-foreground"
           >
-            Anotações
+            Como foi seu dia?
           </label>
           <p className="text-xs text-muted-foreground">
-            Opcional — escreva o que quiser sobre seu dia
+            Opcional — uma frase, um pensamento, o que quiser registrar.
           </p>
+          <Textarea
+            id="notes"
+            placeholder="Hoje eu senti..."
+            rows={4}
+            maxLength={1000}
+            aria-invalid={!!errors.notes}
+            className="resize-none leading-relaxed px-3.5 py-3 mt-2"
+            {...register("notes")}
+          />
+          {errors.notes && (
+            <p role="alert" className="text-xs text-destructive">
+              {errors.notes.message}
+            </p>
+          )}
         </div>
-        <Textarea
-          id="notes"
-          placeholder="Uma frase, um pensamento... o que você quiser registrar."
-          rows={4}
-          maxLength={1000}
-          aria-invalid={!!errors.notes}
-          className="resize-none leading-relaxed px-3.5 py-3"
-          {...register("notes")}
-        />
-        {errors.notes && (
-          <p role="alert" className="text-xs text-destructive">
-            {errors.notes.message}
-          </p>
-        )}
-      </FormSection>
+      </section>
 
-      <div className="space-y-3">
+      {/* Salvar */}
+      <div className="space-y-3 pb-2">
         <SaveIndicator status={saveStatus} errorMessage={errorMessage} />
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-11 w-full"
+          className="h-12 w-full rounded-xl text-sm font-semibold"
         >
           {isSubmitting ? (
             <>
               <Spinner />
-              Anotando...
+              Salvando…
             </>
           ) : hasExistingLog ? (
             "Atualizar registro"

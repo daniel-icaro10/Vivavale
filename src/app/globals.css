@@ -34,70 +34,98 @@
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 2);
 }
 
-/* VivaLeve Design System */
+/* ─────────────────────────────────────────────────────────
+   VivaLeve Design System — v2
+   Paleta: warm off-white background, pure white cards,
+   softer primary violet, subtle warm borders.
+   Inspiração: Oura · Headspace · Apple Health
+   ───────────────────────────────────────────────────────── */
 :root {
-  --background: oklch(0.972 0.005 265);
-  --foreground: oklch(0.265 0.027 258);
+  /* Fundo levemente aquecido — transmite calma, como papel */
+  --background: oklch(0.982 0.006 85);
+  --foreground: oklch(0.218 0.024 260);
 
+  /* Cards brancos flutuam sobre o fundo com sombra sutil */
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.265 0.027 258);
+  --card-foreground: oklch(0.218 0.024 260);
 
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.265 0.027 258);
+  --popover-foreground: oklch(0.218 0.024 260);
 
-  --primary: oklch(0.614 0.185 278);
-  --primary-foreground: oklch(1 0 0);
+  /* Primary: violeta mais suave e profundo — menos elétrico */
+  --primary: oklch(0.545 0.155 277);
+  --primary-foreground: oklch(0.99 0 0);
 
-  --secondary: oklch(0.946 0.008 265);
-  --secondary-foreground: oklch(0.265 0.027 258);
+  /* Secondary */
+  --secondary: oklch(0.968 0.008 80);
+  --secondary-foreground: oklch(0.218 0.024 260);
 
-  --muted: oklch(0.946 0.008 265);
-  --muted-foreground: oklch(0.534 0.023 247);
+  /* Muted: cinza quente para fundos secundários e texto de apoio */
+  --muted: oklch(0.968 0.008 80);
+  --muted-foreground: oklch(0.476 0.020 258);
 
-  --accent: oklch(0.823 0.080 155);
-  --accent-foreground: oklch(0.265 0.027 258);
+  /* Accent: verde sálvia suave — saúde sem agressividade */
+  --accent: oklch(0.820 0.070 155);
+  --accent-foreground: oklch(0.218 0.024 260);
 
-  --destructive: oklch(0.60 0.180 25);
+  --destructive: oklch(0.580 0.175 25);
 
-  --border: oklch(0.913 0.015 256);
-  --input: oklch(0.913 0.015 256);
+  /* Bordas quase invisíveis — separação sutil */
+  --border: oklch(0.928 0.010 85);
+  --input: oklch(0.928 0.010 85);
+  --ring: oklch(0.545 0.155 277);
 
-  --ring: oklch(0.614 0.185 278);
+  /* Radius: aumentado para aparência premium */
+  --radius: 0.75rem;
 
-  --radius: 0.5rem;
+  /* Charts */
+  --chart-1: oklch(0.545 0.155 277);
+  --chart-2: oklch(0.720 0.115 228);
+  --chart-3: oklch(0.820 0.070 155);
+  --chart-4: oklch(0.710 0.125 200);
+  --chart-5: oklch(0.476 0.018 256);
 
-  --chart-1: oklch(0.614 0.185 278);
-  --chart-2: oklch(0.740 0.120 228);
-  --chart-3: oklch(0.823 0.080 155);
-  --chart-4: oklch(0.72 0.130 200);
-  --chart-5: oklch(0.534 0.023 247);
+  /* Sombras — profundidade sutil para cards e superfícies */
+  --shadow-xs:   0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-sm:   0 1px 3px oklch(0 0 0 / 0.07), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-md:   0 4px 8px oklch(0 0 0 / 0.07), 0 2px 4px oklch(0 0 0 / 0.04);
+  --shadow-card: 0 1px 4px oklch(0 0 0 / 0.08), 0 1px 2px oklch(0 0 0 / 0.05);
+  --shadow-hover:0 6px 16px oklch(0 0 0 / 0.10), 0 2px 6px oklch(0 0 0 / 0.06);
 }
 
-/*
- * Slider VivaLeve
- * --vl-pct: progresso preenchido (ex: "50%"), setado via inline style no React.
- * CSS custom properties são herdadas por pseudo-elementos, então a gradient
- * no ::webkit-slider-runnable-track recebe o valor do elemento pai.
- */
+/* ─────────────────────────────────────────────────────────
+   Custom utilities
+   ───────────────────────────────────────────────────────── */
+@utility shadow-xs    { box-shadow: var(--shadow-xs); }
+@utility shadow-card  { box-shadow: var(--shadow-card); }
+@utility shadow-hover { box-shadow: var(--shadow-hover); }
+
+/* Seção com espaçamento generoso — ritmo vertical de produto premium */
+@utility section-gap { gap: 1.75rem; }
+
+/* ─────────────────────────────────────────────────────────
+   Slider VivaLeve
+   --vl-pct: progresso em %, setado via inline style no React.
+   ───────────────────────────────────────────────────────── */
 @layer components {
   .vl-slider {
     -webkit-appearance: none;
     appearance: none;
     width: 100%;
-    height: 44px; /* min tap target — prevents clipping and hitbox inconsistency */
+    height: 44px;
     background: transparent;
     cursor: pointer;
     outline: none;
     display: block;
-    /* Remove flash azul/cinza no tap do iOS Safari */
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Track — WebKit / Blink (Chrome, Safari, Edge) */
+  /* Track — WebKit / Blink */
   .vl-slider::-webkit-slider-runnable-track {
-    height: 6px;
+    height: 5px;
     border-radius: 9999px;
     background: linear-gradient(
       to right,
@@ -112,63 +140,56 @@
   .vl-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 22px;
-    height: 22px;
-    margin-top: -8px; /* centraliza o thumb (22px) na trilha (6px): (22-6)/2 */
+    width: 24px;
+    height: 24px;
+    margin-top: -9.5px;
     border-radius: 50%;
     background-color: white;
     border: 2px solid var(--primary);
-    box-shadow: 0 1px 4px oklch(0 0 0 / 0.10);
+    box-shadow: var(--shadow-sm);
     transition: box-shadow 150ms ease;
     cursor: grab;
   }
 
   .vl-slider:active::-webkit-slider-thumb {
     cursor: grabbing;
-    box-shadow: 0 1px 4px oklch(0 0 0 / 0.10),
-                0 0 0 8px oklch(0.614 0.185 278 / 0.13);
+    box-shadow: var(--shadow-sm), 0 0 0 8px oklch(0.545 0.155 277 / 0.12);
   }
 
   .vl-slider:focus-visible::-webkit-slider-thumb {
-    box-shadow: 0 1px 4px oklch(0 0 0 / 0.10),
-                0 0 0 5px oklch(0.614 0.185 278 / 0.28);
+    box-shadow: var(--shadow-sm), 0 0 0 5px oklch(0.545 0.155 277 / 0.25);
   }
 
-  /* Remove o outline global do elemento — o anel vai no thumb */
   .vl-slider:focus-visible {
     outline: none;
   }
 
   /* Track — Firefox */
   .vl-slider::-moz-range-track {
-    height: 6px;
+    height: 5px;
     border-radius: 9999px;
     background-color: var(--border);
     border: none;
   }
 
-  /* Progresso preenchido — Firefox (nativo, sem CSS custom property necessária) */
   .vl-slider::-moz-range-progress {
-    height: 6px;
+    height: 5px;
     border-radius: 9999px;
     background-color: var(--primary);
   }
 
-  /* Thumb — Firefox */
   .vl-slider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     background-color: white;
     border: 2px solid var(--primary);
-    box-shadow: 0 1px 4px oklch(0 0 0 / 0.10);
+    box-shadow: var(--shadow-sm);
     cursor: grab;
   }
 
-  /* Focus ring — Firefox */
   .vl-slider:focus-visible::-moz-range-thumb {
-    box-shadow: 0 1px 4px oklch(0 0 0 / 0.10),
-                0 0 0 5px oklch(0.614 0.185 278 / 0.28);
+    box-shadow: var(--shadow-sm), 0 0 0 5px oklch(0.545 0.155 277 / 0.25);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -191,15 +212,16 @@
   body {
     @apply bg-background text-foreground;
     font-size: 16px;
-    line-height: 1.6;
+    line-height: 1.65;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    line-height: 1.3;
+    line-height: 1.25;
     font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   :focus-visible {
@@ -217,7 +239,6 @@
     font-size: max(16px, 1em);
   }
 
-  /* Safari iOS: remove tap highlight nos elementos interativos customizados */
   button,
   [role="button"] {
     -webkit-tap-highlight-color: transparent;

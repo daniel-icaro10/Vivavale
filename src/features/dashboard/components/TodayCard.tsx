@@ -10,27 +10,38 @@ interface TodayCardProps {
   todayLog: TodayLog | null;
 }
 
+function ScorePill({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex flex-col items-center gap-0.5">
+      <span className="text-xl font-semibold tabular-nums leading-none text-foreground">
+        {value}
+      </span>
+      <span className="text-[11px] text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
 export function TodayCard({ todayLog }: TodayCardProps) {
   if (todayLog) {
     return (
-      <div className="rounded-xl border border-border bg-card px-4 py-4">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <p className="text-sm font-semibold text-foreground">
-              Registro de hoje
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Dor {todayLog.pain_level} · Fadiga {todayLog.fatigue_level} ·
-              Humor {todayLog.mood_level}
-            </p>
-          </div>
+      <div
+        className="rounded-2xl bg-card px-5 py-5 shadow-card"
+        style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+      >
+        <div className="flex items-start justify-between gap-2 mb-4">
+          <p className="text-sm font-semibold text-foreground">Registro de hoje</p>
           <Link
             href="/daily"
-            className="shrink-0 py-1 text-xs font-medium text-primary hover:underline"
+            className="text-xs font-medium text-primary hover:opacity-75 transition-opacity"
             aria-label="Atualizar registro de hoje"
           >
             Atualizar
           </Link>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          <ScorePill label="Dor" value={todayLog.pain_level} />
+          <ScorePill label="Fadiga" value={todayLog.fatigue_level} />
+          <ScorePill label="Humor" value={todayLog.mood_level} />
         </div>
       </div>
     );
@@ -39,14 +50,22 @@ export function TodayCard({ todayLog }: TodayCardProps) {
   return (
     <Link
       href="/daily"
-      className="block rounded-xl border border-primary/25 bg-primary/5 px-4 py-4 transition-colors hover:bg-primary/10 active:bg-primary/15"
+      className="group block rounded-2xl px-5 py-6 transition-all duration-200 hover:shadow-hover active:scale-[0.99]"
+      style={{
+        background: "oklch(0.545 0.155 277 / 0.06)",
+        border: "1px solid oklch(0.545 0.155 277 / 0.18)",
+        boxShadow: "0 1px 3px oklch(0.545 0.155 277 / 0.08)",
+      }}
       aria-label="Registrar sintomas de hoje"
     >
-      <p className="text-sm font-semibold text-foreground">
-        Como você está hoje?
+      <p className="text-base font-semibold text-foreground leading-snug">
+        Como está seu corpo hoje?
       </p>
-      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-        Reserve um momento para registrar seus sintomas.
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+        Reserve um momento para anotar seus sintomas.
+      </p>
+      <p className="mt-4 text-xs font-semibold text-primary group-hover:underline">
+        Registrar agora →
       </p>
     </Link>
   );

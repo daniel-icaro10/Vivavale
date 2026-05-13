@@ -5,33 +5,39 @@ import { MetricSparkline } from "./MetricSparkline";
 function formatWeekRange(start: string, end: string): string {
   const [, sm, sd] = start.split("-").map(Number);
   const [, em, ed] = end.split("-").map(Number);
-  const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  const MONTHS = [
+    "jan", "fev", "mar", "abr", "mai", "jun",
+    "jul", "ago", "set", "out", "nov", "dez",
+  ];
   if (sm === em) return `${sd}–${ed} de ${MONTHS[sm - 1]}`;
   return `${sd} ${MONTHS[sm - 1]} – ${ed} ${MONTHS[em - 1]}`;
 }
 
-function TrendBadge({ trend }: { trend: WeeklyInsights["trends"][number] }) {
-  const colors: Record<string, string> = {
-    improving: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    worsening: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
-    stable: "bg-muted text-muted-foreground",
-    insufficient_data: "bg-muted text-muted-foreground",
-  };
-  const icons: Record<string, string> = {
-    improving: "↗",
-    worsening: "↘",
-    stable: "→",
-    insufficient_data: "–",
-  };
+const TREND_STYLES: Record<string, { bg: string; text: string; icon: string; label: string }> = {
+  improving:        { bg: "oklch(0.958 0.040 155 / 0.5)", text: "oklch(0.400 0.100 155)", icon: "↑", label: "Melhora" },
+  worsening:        { bg: "oklch(0.970 0.040 25  / 0.5)", text: "oklch(0.500 0.160 25)",  icon: "↓", label: "Piora"   },
+  stable:           { bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "→", label: "Estável" },
+  insufficient_data:{ bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "–", label: "Poucos dados" },
+};
+
+function TrendChip({ trend }: { trend: WeeklyInsights["trends"][number] }) {
+  const style = TREND_STYLES[trend.trend] ?? TREND_STYLES.stable;
   return (
     <div
-      className={`rounded-xl border border-border bg-card px-4 py-3 ${colors[trend.trend] ?? ""}`}
+      className="rounded-xl px-4 py-3 space-y-1"
+      style={{ background: style.bg, border: `1px solid ${style.bg}` }}
     >
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-medium">{trend.label}</p>
-        <span className="text-lg" aria-hidden="true">{icons[trend.trend]}</span>
+        <p className="text-sm font-semibold text-foreground">{trend.label}</p>
+        <span
+          className="text-base font-semibold leading-none"
+          style={{ color: style.text }}
+          aria-label={`Tendência: ${style.label}`}
+        >
+          {style.icon}
+        </span>
       </div>
-      <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{trend.body}</p>
+      <p className="text-xs leading-relaxed text-muted-foreground">{trend.body}</p>
     </div>
   );
 }
@@ -42,46 +48,56 @@ interface WeeklySummaryCardProps {
 }
 
 export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProps) {
-  const sparkPain = sparkLogs
-    .slice()
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((l) => ({ date: l.date.slice(5), value: l.pain_level }));
-
-  const sparkSleep = sparkLogs
-    .slice()
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((l) => ({ date: l.date.slice(5), value: l.sleep_quality }));
+  const sorted = sparkLogs.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const sparkPain  = sorted.map((l) => ({ date: l.date.slice(5), value: l.pain_level }));
+  const sparkSleep = sorted.map((l) => ({ date: l.date.slice(5), value: l.sleep_quality }));
 
   return (
     <section
       aria-labelledby="weekly-summary-heading"
-      className="rounded-2xl border border-border bg-card px-5 py-5 space-y-4"
+      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6"
+      style={{ border: "1px solid oklch(0.928 0.010 85)" }}
     >
+      {/* Header do capítulo */}
       <div className="flex items-center justify-between">
-        <h2
-          id="weekly-summary-heading"
-          className="text-sm font-semibold text-foreground"
+        <div>
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+            Semana
+          </p>
+          <h2
+            id="weekly-summary-heading"
+            className="mt-0.5 text-base font-semibold text-foreground"
+          >
+            {formatWeekRange(insights.weekStart, insights.weekEnd)}
+          </h2>
+        </div>
+        <span
+          className="rounded-full px-3 py-1 text-xs font-semibold"
+          style={{
+            background: "oklch(0.968 0.008 80)",
+            color: "oklch(0.476 0.020 258)",
+          }}
         >
-          Semana de {formatWeekRange(insights.weekStart, insights.weekEnd)}
-        </h2>
-        <span className="text-xs text-muted-foreground">
           {insights.daysLogged} dia{insights.daysLogged !== 1 ? "s" : ""}
         </span>
       </div>
 
+      {/* Resumo narrativo */}
       <p className="text-sm leading-relaxed text-muted-foreground">{insights.summary}</p>
 
+      {/* Sparklines */}
       {sparkPain.length >= 2 && (
         <div className="grid grid-cols-2 gap-4">
-          <MetricSparkline data={sparkPain} label="Dor" />
+          <MetricSparkline data={sparkPain}  label="Dor" />
           <MetricSparkline data={sparkSleep} label="Sono" />
         </div>
       )}
 
+      {/* Tendências */}
       {insights.trends.length > 0 && (
         <div className="space-y-2">
           {insights.trends.map((t) => (
-            <TrendBadge key={t.dimension} trend={t} />
+            <TrendChip key={t.dimension} trend={t} />
           ))}
         </div>
       )}

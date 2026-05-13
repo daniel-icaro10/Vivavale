@@ -26,12 +26,20 @@ function buildWeeklyInsights(logs: DailyLog[]): WeeklyInsights | null {
   const latestDate = logs[0].date;
   const weekStart = getWeekStart(latestDate);
   const weekEnd = getWeekEnd(weekStart);
-  const currentWeekLogs = logs.filter((l) => l.date >= weekStart && l.date <= weekEnd);
+  const currentWeekLogs = logs.filter(
+    (l) => l.date >= weekStart && l.date <= weekEnd,
+  );
   const previousWeekLogs = logs.filter(
-    (l) => l.date >= getPreviousWeekStart(weekStart) && l.date < weekStart,
+    (l) =>
+      l.date >= getPreviousWeekStart(weekStart) && l.date < weekStart,
   );
   if (currentWeekLogs.length === 0) return null;
-  return computeWeeklyInsights(currentWeekLogs, previousWeekLogs, weekStart, weekEnd);
+  return computeWeeklyInsights(
+    currentWeekLogs,
+    previousWeekLogs,
+    weekStart,
+    weekEnd,
+  );
 }
 
 function getPreviousWeekStart(weekStart: string): string {
@@ -63,18 +71,20 @@ export function TimelineClient({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Narrativa semanal gerada server-side */}
+    <div className="space-y-7">
+      {/* Narrativa semanal */}
       {weeklyNarrative && (
         <NarrativeCard text={weeklyNarrative.text} isAI={weeklyNarrative.isAI} />
       )}
 
-      {/* Resumo semanal determinístico + sparklines */}
+      {/* Resumo da semana — capítulo principal */}
       {weeklyInsights && (
         <WeeklySummaryCard
           insights={weeklyInsights}
           sparkLogs={logs.filter(
-            (l) => l.date >= weeklyInsights.weekStart && l.date <= weeklyInsights.weekEnd,
+            (l) =>
+              l.date >= weeklyInsights.weekStart &&
+              l.date <= weeklyInsights.weekEnd,
           )}
         />
       )}
@@ -84,25 +94,39 @@ export function TimelineClient({
         <PatternInsightCard correlations={weeklyInsights.correlations} />
       )}
 
-      {/* Micro-reflexão (máx. 1 por tela) */}
+      {/* Micro-reflexão */}
       {timelineReflection && (
-        <ReflectionCard text={timelineReflection.text} isAI={timelineReflection.isAI} />
+        <ReflectionCard
+          text={timelineReflection.text}
+          isAI={timelineReflection.isAI}
+        />
+      )}
+
+      {/* Separador visual antes da timeline dia-a-dia */}
+      {dayGroups.length > 0 && (
+        <div className="flex items-center gap-3" aria-hidden="true">
+          <div className="h-px flex-1 bg-border" />
+          <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
+            Dias
+          </span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
       )}
 
       {/* Timeline dia a dia */}
-      <section aria-label="Registros diários" className="space-y-5">
+      <section aria-label="Registros diários" className="space-y-7">
         {dayGroups.map((group) => (
           <TimelineDayGroup key={group.date} group={group} />
         ))}
       </section>
 
-      {/* Paginação cursor-based */}
+      {/* Paginação */}
       {cursor && (
-        <div className="flex justify-center pb-6">
+        <div className="flex justify-center pb-4">
           <button
             onClick={loadMore}
             disabled={isPending}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-card px-5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground disabled:opacity-50 motion-reduce:transition-none"
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-medium text-muted-foreground shadow-xs transition-all hover:text-foreground hover:shadow-card disabled:opacity-50"
           >
             {isPending ? (
               <>

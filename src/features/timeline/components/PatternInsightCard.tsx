@@ -9,10 +9,10 @@ export function PatternInsightCard({ correlations }: PatternInsightCardProps) {
   if (correlations.length === 0) return null;
 
   return (
-    <section aria-labelledby="patterns-heading" className="space-y-3">
+    <section aria-labelledby="patterns-heading" className="space-y-4">
       <h2
         id="patterns-heading"
-        className="text-sm font-semibold uppercase tracking-wide text-muted-foreground"
+        className="px-1 text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
       >
         Padrões observados
       </h2>

@@ -11,15 +11,15 @@ export function DailyLogHeader({ date, hasExistingLog }: DailyLogHeaderProps) {
   });
 
   return (
-    <div>
-      <p className="mb-1 text-sm capitalize text-muted-foreground" suppressHydrationWarning>
+    <div className="pb-1">
+      <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70 capitalize" suppressHydrationWarning>
         {formatted}
       </p>
-      <h1 className="text-2xl font-semibold tracking-tight">
+      <h1 className="text-2xl font-semibold tracking-tight text-foreground">
         {hasExistingLog ? "Tudo anotado por hoje" : "Como você está hoje?"}
       </h1>
       {hasExistingLog && (
-        <p className="mt-1.5 text-sm text-muted-foreground">
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
           Pode atualizar sempre que quiser.
         </p>
       )}

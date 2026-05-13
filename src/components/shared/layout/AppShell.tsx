@@ -11,8 +11,7 @@ export function AppShell({ children, className }: AppShellProps) {
     <div className="relative flex min-h-screen flex-col bg-background">
       <main
         className={cn(
-          "flex-1 px-4 py-6",
-          "pb-[calc(56px+env(safe-area-inset-bottom))]",
+          "flex-1 px-5 pt-7 pb-[calc(68px+env(safe-area-inset-bottom))]",
           "max-w-lg mx-auto w-full",
           className,
         )}

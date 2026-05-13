@@ -8,13 +8,14 @@ interface NarrativeCardProps {
 export function NarrativeCard({ text, isAI }: NarrativeCardProps) {
   return (
     <div
-      className="rounded-xl border border-border bg-muted/20 px-4 py-4"
+      className="rounded-2xl bg-card px-6 py-6 shadow-card"
+      style={{ border: "1px solid oklch(0.928 0.010 85)" }}
       role="note"
       aria-label="Narrativa da semana"
     >
-      <p className="text-sm leading-relaxed text-foreground">{text}</p>
+      <p className="text-base leading-relaxed text-foreground">{text}</p>
       {isAI && (
-        <div className="mt-2.5 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <AIInsightBadge />
         </div>
       )}

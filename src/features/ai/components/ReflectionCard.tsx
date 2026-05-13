@@ -8,13 +8,17 @@ interface ReflectionCardProps {
 export function ReflectionCard({ text, isAI }: ReflectionCardProps) {
   return (
     <div
-      className="rounded-xl border border-dashed border-border px-4 py-3.5"
+      className="rounded-2xl px-5 py-5"
+      style={{
+        background: "oklch(0.968 0.008 80)",
+        border: "1px dashed oklch(0.880 0.015 85)",
+      }}
       role="note"
       aria-label="Reflexão sobre seus registros"
     >
       <p className="text-sm italic leading-relaxed text-muted-foreground">{text}</p>
       {isAI && (
-        <div className="mt-2 flex justify-end">
+        <div className="mt-3 flex justify-end">
           <AIInsightBadge />
         </div>
       )}

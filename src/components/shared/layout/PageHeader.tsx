@@ -14,15 +14,19 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <header className={cn("mb-6", className)}>
+    <header className={cn("mb-7", className)}>
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">{title}</h1>
           {description && (
-            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
+              {description}
+            </p>
           )}
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+            {title}
+          </h1>
         </div>
-        {children && <div className="shrink-0">{children}</div>}
+        {children && <div className="shrink-0 pt-0.5">{children}</div>}
       </div>
     </header>
   );
