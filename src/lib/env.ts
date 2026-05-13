@@ -18,4 +18,12 @@ export const env = {
   supabaseAnonKey: requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
   // Opcional — tem fallback seguro para desenvolvimento local
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+
+  // IA narrativa — opcional. Se AI_NARRATIVES_ENABLED != "true", o sistema usa
+  // fallback determinístico e OPENAI_API_KEY não é carregada.
+  aiEnabled: process.env.AI_NARRATIVES_ENABLED === "true",
+  // Nunca exposto ao cliente. Apenas server-side.
+  openaiApiKey: process.env.OPENAI_API_KEY ?? null,
+  // Modelo primário e fallback dentro da tier OpenAI.
+  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
 } as const;
