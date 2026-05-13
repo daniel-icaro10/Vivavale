@@ -6,7 +6,7 @@ interface MedicationEmptyStateProps {
 
 export function MedicationEmptyState({ onAdd }: MedicationEmptyStateProps) {
   return (
-    <div className="flex flex-col items-center px-5 py-16 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
+    <div className="flex flex-col items-center px-5 py-16 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
       <div
         className="mb-5 flex h-14 w-14 items-center justify-center rounded-full"
         style={{ background: "oklch(0.968 0.008 80)" }}

@@ -8,12 +8,20 @@ interface NarrativeCardProps {
 export function NarrativeCard({ text, isAI }: NarrativeCardProps) {
   return (
     <div
-      className="rounded-2xl bg-card px-6 py-6 shadow-card animate-in fade-in-0 slide-in-from-bottom-2 duration-200 float-hover"
-      style={{ border: "1px solid oklch(0.928 0.010 85)" }}
       role="note"
       aria-label="Narrativa da semana"
+      className="rounded-2xl bg-card px-6 pt-5 pb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
+      style={{
+        borderTop: "2px solid oklch(0.540 0.138 277 / 0.12)",
+        borderLeft: "1px solid oklch(0.940 0.007 85)",
+        borderRight: "1px solid oklch(0.940 0.007 85)",
+        borderBottom: "1px solid oklch(0.940 0.007 85)",
+      }}
     >
-      <p className="text-[15px] leading-7 text-foreground/90 max-w-reading">{text}</p>
+      <p className="mb-3 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
+        Esta semana
+      </p>
+      <p className="text-[15px] leading-7 text-foreground/85 max-w-reading">{text}</p>
       {isAI && (
         <div className="mt-4 flex justify-end">
           <AIInsightBadge />

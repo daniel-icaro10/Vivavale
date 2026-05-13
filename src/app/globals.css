@@ -55,8 +55,8 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.218 0.024 260);
 
-  /* Primary: violeta mais suave e profundo — menos elétrico */
-  --primary: oklch(0.545 0.155 277);
+  /* Primary: violeta suave — menos elétrico, mais calmo */
+  --primary: oklch(0.540 0.138 277);
   --primary-foreground: oklch(0.99 0 0);
 
   /* Secondary */
@@ -73,10 +73,10 @@
 
   --destructive: oklch(0.580 0.175 25);
 
-  /* Bordas quase invisíveis — separação sutil */
-  --border: oklch(0.928 0.010 85);
-  --input: oklch(0.928 0.010 85);
-  --ring: oklch(0.545 0.155 277);
+  /* Bordas quase invisíveis — separação mais suave */
+  --border: oklch(0.940 0.007 85);
+  --input: oklch(0.940 0.007 85);
+  --ring: oklch(0.540 0.138 277);
 
   /* Radius: aumentado para aparência premium */
   --radius: 0.75rem;
@@ -88,12 +88,12 @@
   --chart-4: oklch(0.710 0.125 200);
   --chart-5: oklch(0.476 0.018 256);
 
-  /* Sombras — profundidade sutil para cards e superfícies */
-  --shadow-xs:   0 1px 2px oklch(0 0 0 / 0.04);
-  --shadow-sm:   0 1px 3px oklch(0 0 0 / 0.07), 0 1px 2px oklch(0 0 0 / 0.04);
-  --shadow-md:   0 4px 8px oklch(0 0 0 / 0.07), 0 2px 4px oklch(0 0 0 / 0.04);
-  --shadow-card: 0 1px 4px oklch(0 0 0 / 0.08), 0 1px 2px oklch(0 0 0 / 0.05);
-  --shadow-hover:0 6px 16px oklch(0 0 0 / 0.10), 0 2px 6px oklch(0 0 0 / 0.06);
+  /* Sombras — profundidade mais suave, menos contraste */
+  --shadow-xs:   0 1px 2px oklch(0 0 0 / 0.03);
+  --shadow-sm:   0 1px 3px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.03);
+  --shadow-md:   0 4px 8px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.03);
+  --shadow-card: 0 1px 4px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-hover:0 6px 16px oklch(0 0 0 / 0.08), 0 2px 6px oklch(0 0 0 / 0.05);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -125,6 +125,26 @@
    Slider VivaLeve
    --vl-pct: progresso em %, setado via inline style no React.
    ───────────────────────────────────────────────────────── */
+/* ─── Shimmer — skeleton loader orgânico ──────────────────
+   Gradiente quente que flui da esquerda para direita.       */
+@keyframes vl-shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@layer components {
+  .vl-shimmer {
+    background: linear-gradient(
+      90deg,
+      oklch(0.960 0.008 80) 0%,
+      oklch(0.975 0.005 85) 50%,
+      oklch(0.960 0.008 80) 100%
+    );
+    background-size: 200% 100%;
+    animation: vl-shimmer 1.8s ease-in-out infinite;
+  }
+}
+
 /* ─── Float hover — profundidade sutil (desktop only) ─────
    Usar junto com hover:shadow-hover na classe do elemento.  */
 @layer components {

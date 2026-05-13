@@ -67,8 +67,8 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
   return (
     <section
       aria-labelledby="weekly-summary-heading"
-      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-200 float-hover"
-      style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300 float-hover"
+      style={{ border: "1px solid oklch(0.940 0.007 85)" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between">
