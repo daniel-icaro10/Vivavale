@@ -40,8 +40,8 @@ const PAIRS: DimensionPair[] = [
     label: "Dor e fadiga",
     body: (r) =>
       r > 0
-        ? "Em dias com mais dor, você também tende a registrar mais fadiga."
-        : "Em dias com mais dor, a fadiga parece menor — um padrão incomum que vale observar.",
+        ? "Seus registros mostram que dor e fadiga tendem a aparecer em níveis parecidos no mesmo dia."
+        : "Seus registros mostram uma associação incomum: dor e fadiga nem sempre aparecem juntas — um padrão que vale observar.",
   },
   {
     keyA: "sleep_quality",
@@ -49,8 +49,8 @@ const PAIRS: DimensionPair[] = [
     label: "Sono e humor",
     body: (r) =>
       r > 0
-        ? "Noites com melhor sono parecem estar associadas a um humor mais elevado no dia seguinte."
-        : "Sono e humor parecem seguir caminhos opostos — pode ser útil observar esse padrão.",
+        ? "Registros com sono melhor avaliado também mostraram humor mais elevado nesse mesmo período."
+        : "Alguns registros mostram sono e humor seguindo direções opostas — um padrão que pode valer acompanhar.",
   },
   {
     keyA: "sleep_quality",
@@ -58,8 +58,8 @@ const PAIRS: DimensionPair[] = [
     label: "Sono e fadiga",
     body: (r) =>
       r < 0
-        ? "Noites com pior sono tendem a coincidir com mais fadiga no dia seguinte."
-        : "Sono e fadiga estão correlacionados positivamente — vale acompanhar.",
+        ? "Registros com sono pior avaliado tenderam a aparecer junto de níveis mais altos de fadiga."
+        : "Seus registros mostram sono e fadiga em direção parecida — um padrão que vale acompanhar.",
   },
   {
     keyA: "fatigue_level",
@@ -67,8 +67,8 @@ const PAIRS: DimensionPair[] = [
     label: "Fadiga e humor",
     body: (r) =>
       r < 0
-        ? "Dias com mais fadiga tendem a coincidir com humor mais baixo."
-        : "Fadiga e humor seguem direção parecida nos seus registros.",
+        ? "Registros com fadiga mais alta também mostraram níveis de humor mais baixos nesse mesmo dia."
+        : "Em seus registros, fadiga e humor parecem seguir uma direção parecida.",
   },
 ];
 

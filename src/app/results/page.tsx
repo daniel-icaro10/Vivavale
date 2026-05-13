@@ -67,12 +67,12 @@ function OverallBadge({ level }: { level: InsightSeverity }) {
 
 async function getSession(token: string) {
   const supabase = await createServerClient();
+  // Acesso via RPC capability-based: apenas retorna dados do token exato.
+  // SELECT direto está bloqueado por RLS (migration 007).
   const { data } = await supabase
-    .from("public_symptom_sessions")
-    .select("computed_insights")
-    .eq("session_token", token)
-    .single();
-  return data;
+    .rpc("get_public_session_insights", { p_token: token });
+  if (!data) return null;
+  return { computed_insights: data };
 }
 
 export default async function ResultsPage({

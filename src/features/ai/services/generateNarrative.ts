@@ -7,6 +7,7 @@ import { buildTimelineReflectionPrompt } from "../prompts/timeline-reflection";
 import { fallbackNarrative } from "../utils/fallbackNarrative";
 import { parseNarrative } from "../structured/parser/parseNarrative";
 import { renderNarrative } from "../structured/renderers/renderNarrative";
+import { evaluateNarrative } from "../evaluation/evaluateNarrative";
 import { trackEvent } from "../observability/telemetry/trackEvent";
 import { SESSION_ID } from "../observability/telemetry/runtimeSession";
 import { initTelemetry } from "../observability/telemetry/initTelemetry";
@@ -22,6 +23,7 @@ import type { StructuredNarrativeFieldName } from "../structured/types/structure
 const AI_TIMEOUT_MS = 4_000;
 
 // Cache: chave = hash do contexto + tipo. TTL = 1h.
+// Apenas textos que passaram pela avaliação holística são cacheados.
 const cache = new Map<string, { text: string; expiresAt: number }>();
 
 function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
@@ -103,7 +105,7 @@ export async function generateNarrative(
 
     const latencyMs = Date.now() - start;
 
-    // Pipeline estruturado: parse → validate per field → partial fallback → render
+    // Estágio 1 — parse estruturado: JSON → fields → validação por campo → partial fallback
     const { result, logs } = parseNarrative(raw, ctx, type);
 
     // Traduz logs do parser em eventos de telemetria
@@ -127,14 +129,12 @@ export async function generateNarrative(
         const fbCount = (entry.data?.fallbackCount as number | undefined) ?? 0;
         trackEvent(makeParserRecovered(SESSION_ID, type, aiCount));
         trackEvent(makeFallbackTriggered(SESSION_ID, type, "parser_failure", false));
-        // generation_completed with partial fallback
         trackEvent(
           makeGenerationCompleted(SESSION_ID, type, env.openaiModel, latencyMs, aiCount, fbCount),
         );
       }
     }
 
-    // Se nenhum log especial, geração foi completa com AI
     const hadParseFailure = logs.some(
       (l) => l.event === "invalid_json" || l.event === "missing_field",
     );
@@ -146,14 +146,24 @@ export async function generateNarrative(
       );
     }
 
+    // Parse falhou completamente — fallback já embutido no result
     if (!result.anyAI) {
-      const text = renderNarrative(result);
-      return { text, isAI: false, latencyMs };
+      return { text: renderNarrative(result), isAI: false, latencyMs };
     }
 
     const text = renderNarrative(result);
 
-    // Cache apenas quando pelo menos algum campo é AI
+    // Estágio 2 — avaliação holística sobre o texto final renderizado.
+    // Cobre o que a validação por campo não pode: tom, repetição, warmth do texto completo.
+    // evaluation_rejected é emitido internamente por evaluateNarrative para cada dimensão reprovada.
+    const evaluation = evaluateNarrative(text, type);
+
+    if (!evaluation.approved) {
+      trackEvent(makeFallbackTriggered(SESSION_ID, type, "evaluation_failed", true));
+      return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
+    }
+
+    // Cache apenas textos aprovados pela avaliação holística
     cache.set(cacheKey, { text, expiresAt: now + 60 * 60 * 1000 });
 
     return { text, isAI: result.anyAI, latencyMs };

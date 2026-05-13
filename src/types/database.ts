@@ -235,7 +235,12 @@ export type Database = {
       };
     };
     Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Functions: {
+      get_public_session_insights: {
+        Args: { p_token: string };
+        Returns: Record<string, unknown> | null;
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

@@ -1,9 +1,26 @@
 import path from "path";
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
+/**
+ * script-src:
+ *   - Development: unsafe-eval needed by Turbopack/HMR; unsafe-inline for dev overlays.
+ *   - Production: unsafe-eval REMOVED (eliminates script-injection attack surface).
+ *     unsafe-inline is retained because Next.js App Router injects inline hydration
+ *     scripts that cannot be nonce-controlled without a custom middleware rewrite.
+ *     Long-term: replace unsafe-inline with nonces via middleware-generated CSP headers.
+ *
+ * frame-ancestors: 'none' is the strict directive (no framing allowed).
+ * X-Frame-Options is omitted — CSP frame-ancestors supersedes it in all modern browsers,
+ * and keeping both with different values creates a confusing, auditable inconsistency.
+ */
+const scriptSrc = isDev
+  ? "script-src 'self' 'unsafe-eval' 'unsafe-inline'"
+  : "script-src 'self' 'unsafe-inline'";
+
 const securityHeaders = [
   { key: "X-DNS-Prefetch-Control", value: "on" },
-  { key: "X-Frame-Options", value: "SAMEORIGIN" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
@@ -18,7 +35,7 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'",
+      scriptSrc,
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob:",
       "font-src 'self' https://fonts.gstatic.com",
