@@ -46,11 +46,18 @@ export function BottomNav() {
                     className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-primary"
                   />
                 )}
-                <Icon
-                  size={20}
-                  strokeWidth={isActive ? 2.2 : 1.7}
-                  aria-hidden="true"
-                />
+                <span
+                  className={cn(
+                    "flex items-center justify-center transition-transform duration-150 ease-out",
+                    isActive && "-translate-y-px",
+                  )}
+                >
+                  <Icon
+                    size={20}
+                    strokeWidth={isActive ? 2.2 : 1.7}
+                    aria-hidden="true"
+                  />
+                </span>
                 <span>{label}</span>
               </Link>
             </li>

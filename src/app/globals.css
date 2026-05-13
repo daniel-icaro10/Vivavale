@@ -112,10 +112,34 @@
 @utility anim-delay-225 { animation-delay: 225ms; }
 @utility anim-delay-300 { animation-delay: 300ms; }
 
+/* ─── Depth system (Oura feeling) ───────────────────────── */
+/* surface-2: blocos contextuais — quente suave */
+@utility surface-2 { background-color: oklch(0.978 0.006 85); }
+/* surface-3: hero / destaque — fundo levemente pigmentado */
+@utility surface-3 { background-color: oklch(0.970 0.010 80); }
+
+/* ─── Reading width — conforto de leitura ───────────────── */
+@utility max-w-reading { max-width: 65ch; }
+
 /* ─────────────────────────────────────────────────────────
    Slider VivaLeve
    --vl-pct: progresso em %, setado via inline style no React.
    ───────────────────────────────────────────────────────── */
+/* ─── Float hover — profundidade sutil (desktop only) ─────
+   Usar junto com hover:shadow-hover na classe do elemento.  */
+@layer components {
+  .float-hover {
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @media (hover: hover) {
+    .float-hover:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-hover);
+    }
+  }
+}
+
 @layer components {
   .vl-slider {
     -webkit-appearance: none;
@@ -218,16 +242,20 @@
   body {
     @apply bg-background text-foreground;
     font-size: 16px;
-    line-height: 1.65;
+    line-height: 1.7;
     font-feature-settings: "rlig" 1, "calt" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    line-height: 1.25;
+    line-height: 1.2;
     font-weight: 600;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.015em;
+  }
+
+  h1, h2 {
+    text-wrap: balance;
   }
 
   :focus-visible {

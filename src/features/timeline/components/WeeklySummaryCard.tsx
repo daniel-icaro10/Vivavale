@@ -55,7 +55,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
   return (
     <section
       aria-labelledby="weekly-summary-heading"
-      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
+      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-200 float-hover"
       style={{ border: "1px solid oklch(0.928 0.010 85)" }}
     >
       {/* Header do capítulo */}
@@ -82,8 +82,8 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
         </span>
       </div>
 
-      {/* Resumo narrativo */}
-      <p className="text-sm leading-relaxed text-muted-foreground">{insights.summary}</p>
+      {/* Resumo narrativo — editorial */}
+      <p className="text-[15px] leading-[1.75] text-muted-foreground max-w-reading">{insights.summary}</p>
 
       {/* Sparklines */}
       {sparkPain.length >= 2 && (

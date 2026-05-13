@@ -25,14 +25,20 @@ export function TodayCard({ todayLog }: TodayCardProps) {
   if (todayLog) {
     return (
       <div
-        className="rounded-2xl bg-card px-5 py-5 shadow-card"
+        className="rounded-2xl bg-card px-5 py-5 shadow-card float-hover"
         style={{ border: "1px solid oklch(0.928 0.010 85)" }}
       >
         <div className="flex items-start justify-between gap-2 mb-4">
-          <p className="text-sm font-semibold text-foreground">Registro de hoje</p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm font-semibold text-foreground">Hoje</p>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/60"
+              aria-hidden="true"
+            />
+          </div>
           <Link
             href="/daily"
-            className="text-xs font-medium text-primary hover:opacity-75 transition-opacity"
+            className="text-xs font-medium text-primary hover:opacity-75 transition-opacity min-h-[44px] flex items-center"
             aria-label="Atualizar registro de hoje"
           >
             Atualizar
@@ -50,7 +56,7 @@ export function TodayCard({ todayLog }: TodayCardProps) {
   return (
     <Link
       href="/daily"
-      className="group block rounded-2xl px-5 py-6 transition-all duration-200 hover:shadow-hover active:scale-[0.99]"
+      className="group block rounded-2xl px-5 py-6 transition-all duration-200 hover:shadow-hover active:scale-[0.985]"
       style={{
         background: "oklch(0.545 0.155 277 / 0.06)",
         border: "1px solid oklch(0.545 0.155 277 / 0.18)",

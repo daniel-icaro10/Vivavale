@@ -164,7 +164,7 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   const hasExistingLog = initialLog !== null;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-6">
       <DailyLogHeader date={today} hasExistingLog={hasExistingLog} />
 
       <input type="hidden" {...register("date")} />

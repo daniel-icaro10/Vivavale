@@ -16,7 +16,7 @@ export function ReflectionCard({ text, isAI }: ReflectionCardProps) {
       role="note"
       aria-label="Reflexão sobre seus registros"
     >
-      <p className="text-sm italic leading-relaxed text-muted-foreground">{text}</p>
+      <p className="text-[15px] leading-7 text-muted-foreground/80 max-w-reading">{text}</p>
       {isAI && (
         <div className="mt-3 flex justify-end">
           <AIInsightBadge />

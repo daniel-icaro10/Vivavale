@@ -37,15 +37,33 @@ export function OnboardingChecklist({
   hasReminders,
 }: OnboardingChecklistProps) {
   const completed = [hasMedications, hasLoggedToday, hasReminders];
+  const stepsCompleted = completed.filter(Boolean).length;
+
+  const welcomeTitle =
+    stepsCompleted === 0
+      ? "Bem-vindo ao VivaLeve"
+      : stepsCompleted === 1
+        ? "Bom começo"
+        : "Quase lá";
+
+  const welcomeBody =
+    stepsCompleted === 0
+      ? "Três passos simples para começar o seu acompanhamento."
+      : stepsCompleted === 1
+        ? "Continue no seu ritmo — sem pressa."
+        : "Mais um passo e você está pronto.";
 
   return (
-    <div className="rounded-xl border border-border bg-card px-4 py-4">
-      <p className="text-sm font-semibold text-foreground">Como começar</p>
-      <p className="mt-0.5 text-xs text-muted-foreground">
-        Três passos simples para aproveitar o VivaLeve.
+    <div
+      className="rounded-2xl px-5 py-6 shadow-xs"
+      style={{ background: "oklch(0.970 0.010 80)", border: "1px solid oklch(0.940 0.012 80)" }}
+    >
+      <p className="text-base font-semibold text-foreground">{welcomeTitle}</p>
+      <p className="mt-1 text-sm text-muted-foreground">
+        {welcomeBody}
       </p>
 
-      <ol className="mt-4 space-y-4" aria-label="Passos de configuração">
+      <ol className="mt-5 space-y-4" aria-label="Passos de configuração">
         {STEPS.map((step, i) => {
           const isDone = completed[i];
           return (

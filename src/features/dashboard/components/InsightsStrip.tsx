@@ -7,9 +7,11 @@ interface InsightsStripProps {
 function StatCell({
   value,
   label,
+  context,
 }: {
   value: number;
   label: string;
+  context?: string;
 }) {
   return (
     <div
@@ -22,12 +24,25 @@ function StatCell({
       <span className="text-[11px] font-medium leading-tight text-muted-foreground">
         {label}
       </span>
+      {context && (
+        <span className="text-[10px] leading-tight text-muted-foreground/50 font-medium uppercase tracking-wide mt-0.5">
+          {context}
+        </span>
+      )}
     </div>
   );
 }
 
 function plural(n: number, singular: string, plural: string): string {
   return n === 1 ? singular : plural;
+}
+
+function weekContext(days: number): string {
+  if (days === 7) return "semana completa";
+  if (days >= 5) return "boa frequência";
+  if (days >= 3) return "em andamento";
+  if (days === 1) return "bom começo";
+  return "";
 }
 
 export function InsightsStrip({
@@ -44,21 +59,16 @@ export function InsightsStrip({
       <StatCell
         value={daysThisWeek}
         label={plural(daysThisWeek, "dia esta semana", "dias esta semana")}
+        context={weekContext(daysThisWeek)}
       />
-      {/* Separador vertical sutil */}
+      {/* Separadores verticais sutis */}
       <div className="relative">
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-4 left-0 w-px bg-border"
-        />
+        <div aria-hidden="true" className="absolute inset-y-4 left-0 w-px bg-border" />
         <StatCell
           value={activeMedicationsCount}
           label={plural(activeMedicationsCount, "remédio ativo", "remédios ativos")}
         />
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-4 right-0 w-px bg-border"
-        />
+        <div aria-hidden="true" className="absolute inset-y-4 right-0 w-px bg-border" />
       </div>
       <StatCell
         value={activeRemindersCount}
