@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, History, Pill, Bell } from "lucide-react";
+import { Home, ClipboardList, Activity, Pill, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", label: "Início", icon: Home },
   { href: "/daily", label: "Registrar", icon: ClipboardList },
-  { href: "/history", label: "Histórico", icon: History },
+  { href: "/timeline", label: "Evolução", icon: Activity },
   { href: "/medications", label: "Remédios", icon: Pill },
   { href: "/reminders", label: "Lembretes", icon: Bell },
 ];
