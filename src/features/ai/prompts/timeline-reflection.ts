@@ -14,17 +14,18 @@ export function buildTimelineReflectionPrompt(ctx: NarrativeContext): string {
     lines.push(`Padrão mais relevante: ${strongest.label}`);
   }
 
-  if (ctx.trends.length > 0) {
-    const notStable = ctx.trends.filter(
-      (t) => t.trend !== "stable" && t.trend !== "insufficient_data",
+  const notStable = ctx.trends.filter(
+    (t) => t.trend !== "stable" && t.trend !== "insufficient_data",
+  );
+  if (notStable.length > 0) {
+    lines.push(
+      `Tendência recente: ${notStable[0].dimension} ${notStable[0].trend === "improving" ? "melhorando" : "aumentando"}`,
     );
-    if (notStable.length > 0) {
-      lines.push(`Tendência recente: ${notStable[0].dimension} ${notStable[0].trend === "improving" ? "melhorando" : "aumentando"}`);
-    }
   }
 
   return (
-    `Com base nos dados abaixo, escreva uma micro-reflexão de 1–2 frases, ` +
-    `calma e observacional, para o usuário refletir sobre seus padrões recentes:\n\n${lines.join("\n")}`
+    `Dados para gerar micro-reflexão narrativa em JSON:\n\n${lines.join("\n")}\n\n` +
+    `Responda APENAS com o JSON no formato: {"opening":"...","trend":"...","reflection":"...","closing":"..."}\n` +
+    `O campo "opening" deve ser muito breve (introdução de 1 frase). Os outros campos devem ser igualmente curtos.`
   );
 }

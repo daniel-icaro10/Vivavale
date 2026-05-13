@@ -4,14 +4,13 @@ import type { NarrativeContext, NarrativeResult, NarrativeType } from "../types/
 import { NARRATIVE_SYSTEM_PROMPT } from "../prompts/narrative-system";
 import { buildWeeklySummaryPrompt } from "../prompts/weekly-summary";
 import { buildTimelineReflectionPrompt } from "../prompts/timeline-reflection";
-import { sanitizeNarrative } from "./sanitizeNarrative";
-import { validateNarrative } from "./validateNarrative";
-import { evaluateNarrative } from "../evaluation/evaluateNarrative";
 import { fallbackNarrative } from "../utils/fallbackNarrative";
+import { parseNarrative } from "../structured/parser/parseNarrative";
+import { renderNarrative } from "../structured/renderers/renderNarrative";
 
 const AI_TIMEOUT_MS = 4_000;
 
-// Cache em memória: chave = hash do contexto + tipo. TTL = 1h.
+// Cache: chave = hash do contexto + tipo. TTL = 1h.
 const cache = new Map<string, { text: string; expiresAt: number }>();
 
 function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
@@ -76,8 +75,9 @@ export async function generateNarrative(
       const response = await getClient().chat.completions.create(
         {
           model: env.openaiModel,
-          temperature: 0.4,
-          max_tokens: 200,
+          temperature: 0.3,     // menor que fase 16 — JSON estruturado tolera menos criatividade
+          max_tokens: 300,      // 4 campos × ~75 tokens cada
+          response_format: { type: "json_object" },
           messages: [
             { role: "system", content: NARRATIVE_SYSTEM_PROMPT },
             { role: "user", content: buildUserPrompt(ctx, type) },
@@ -91,40 +91,37 @@ export async function generateNarrative(
     }
 
     const latencyMs = Date.now() - start;
-    logAI("generated", { type, latencyMs });
+    logAI("generated", { type, latencyMs, rawLength: raw.length });
 
-    // 1. Sanitização
-    const sanitized = sanitizeNarrative(raw);
+    // Pipeline estruturado: parse → validate per field → partial fallback → render
+    const { result, logs } = parseNarrative(raw, ctx, type);
 
-    // 2. Validação de termos proibidos (fase 16)
-    const validation = validateNarrative(sanitized);
-    if (!validation.valid) {
-      logAI("forbidden_term_blocked", { type, term: validation.blockedTerm });
-      return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
+    // Encaminha logs do parser para observabilidade
+    for (const entry of logs) {
+      logAI(entry.event, entry.data);
     }
 
-    // 3. Avaliação de qualidade emocional e estrutural (fase 17)
-    const evaluation = evaluateNarrative(sanitized, type);
-
-    logAI("evaluation_scores", {
-      type,
-      scores: evaluation.scores,
-      approved: evaluation.approved,
-    });
-
-    if (!evaluation.approved) {
-      logAI("evaluation_failed", {
+    if (result.hadPartialFallback) {
+      logAI("partial_fallback", {
         type,
-        fallbackReason: evaluation.fallbackReason,
-        flags: evaluation.flags,
+        aiFields: Object.entries(result.fields)
+          .filter(([, v]) => v.isAI)
+          .map(([k]) => k),
       });
-      return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
     }
 
-    // Cache apenas narrativas aprovadas
-    cache.set(cacheKey, { text: sanitized, expiresAt: now + 60 * 60 * 1000 });
+    if (!result.anyAI) {
+      // Parse falhou completamente — usa fallback unificado (já contido no result)
+      const text = renderNarrative(result);
+      return { text, isAI: false, latencyMs };
+    }
 
-    return { text: sanitized, isAI: true, latencyMs };
+    const text = renderNarrative(result);
+
+    // Cache apenas quando pelo menos algum campo é AI
+    cache.set(cacheKey, { text, expiresAt: now + 60 * 60 * 1000 });
+
+    return { text, isAI: result.anyAI, latencyMs };
   } catch (err) {
     const latencyMs = Date.now() - start;
     const isTimeout = err instanceof Error && err.name === "AbortError";
