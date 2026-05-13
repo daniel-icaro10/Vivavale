@@ -36,29 +36,23 @@ export type PushState = {
 // ============================================================
 
 export function usePushNotifications() {
-  const [state, setState] = useState<PushState>({ status: "loading" });
+  const [state, setState] = useState<PushState>(() => {
+    // Inicialização lazy: evita setState síncrono em useEffect.
+    if (typeof window === "undefined") return { status: "loading" };
+    if (!isPushSupported()) return { status: "unsupported" };
+    if (getNotificationPermission() === "denied") return { status: "denied" };
+    return { status: "loading" };
+  });
   const [isProcessing, setIsProcessing] = useState(false);
 
-  // Verifica estado inicial ao montar
+  // Verifica subscription existente apenas quando o estado inicial é "loading"
   useEffect(() => {
-    if (!isPushSupported()) {
-      setState({ status: "unsupported" });
-      return;
-    }
-
-    const permission = getNotificationPermission();
-    if (permission === "denied") {
-      setState({ status: "denied" });
-      return;
-    }
+    if (state.status !== "loading") return;
 
     getExistingSubscription().then((sub) => {
-      if (sub) {
-        setState({ status: "subscribed", subscription: sub });
-      } else {
-        setState({ status: "unsubscribed" });
-      }
+      setState(sub ? { status: "subscribed", subscription: sub } : { status: "unsubscribed" });
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Ativa notificações: pede permissão + cria subscription + salva no servidor

@@ -6,11 +6,12 @@ import { buildWeeklySummaryPrompt } from "../prompts/weekly-summary";
 import { buildTimelineReflectionPrompt } from "../prompts/timeline-reflection";
 import { sanitizeNarrative } from "./sanitizeNarrative";
 import { validateNarrative } from "./validateNarrative";
+import { evaluateNarrative } from "../evaluation/evaluateNarrative";
 import { fallbackNarrative } from "../utils/fallbackNarrative";
 
 const AI_TIMEOUT_MS = 4_000;
 
-// Cache em memória: chave = hash do contexto + tipo. TTL = 1h (module-level, persiste entre requests).
+// Cache em memória: chave = hash do contexto + tipo. TTL = 1h.
 const cache = new Map<string, { text: string; expiresAt: number }>();
 
 function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
@@ -26,7 +27,7 @@ function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
 }
 
 function logAI(event: string, data?: Record<string, unknown>) {
-  // Observabilidade: apenas metadados, nunca conteúdo sensível do usuário.
+  // Observabilidade: apenas metadados — NUNCA logar conteúdo do usuário.
   console.log(`[VivaLeve/AI] ${event}`, data ?? "");
 }
 
@@ -49,7 +50,7 @@ export async function generateNarrative(
   ctx: NarrativeContext,
   type: NarrativeType,
 ): Promise<NarrativeResult> {
-  // Feature flag: se desabilitado, retorna fallback sem fazer nenhuma chamada de IA.
+  // Feature flag: se desabilitado, fallback determinístico sem chamada de IA.
   if (!env.aiEnabled || !env.openaiApiKey) {
     return { text: fallbackNarrative(ctx, type), isAI: false };
   }
@@ -92,15 +93,35 @@ export async function generateNarrative(
     const latencyMs = Date.now() - start;
     logAI("generated", { type, latencyMs });
 
+    // 1. Sanitização
     const sanitized = sanitizeNarrative(raw);
-    const validation = validateNarrative(sanitized);
 
+    // 2. Validação de termos proibidos (fase 16)
+    const validation = validateNarrative(sanitized);
     if (!validation.valid) {
       logAI("forbidden_term_blocked", { type, term: validation.blockedTerm });
       return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
     }
 
-    // Cache por 1h — mesma semana de dados = mesmo resumo.
+    // 3. Avaliação de qualidade emocional e estrutural (fase 17)
+    const evaluation = evaluateNarrative(sanitized, type);
+
+    logAI("evaluation_scores", {
+      type,
+      scores: evaluation.scores,
+      approved: evaluation.approved,
+    });
+
+    if (!evaluation.approved) {
+      logAI("evaluation_failed", {
+        type,
+        fallbackReason: evaluation.fallbackReason,
+        flags: evaluation.flags,
+      });
+      return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
+    }
+
+    // Cache apenas narrativas aprovadas
     cache.set(cacheKey, { text: sanitized, expiresAt: now + 60 * 60 * 1000 });
 
     return { text: sanitized, isAI: true, latencyMs };

@@ -12,7 +12,18 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Supabase Edge Functions usam Deno — incompatíveis com regras Node/Next.js.
+    "supabase/functions/**",
   ]),
+  {
+    rules: {
+      // Permite parâmetros/variáveis prefixados com _ (padrão de stubs AI-ready e hooks).
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

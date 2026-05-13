@@ -3,7 +3,7 @@ import type { DailyLog } from "@/types/app";
 import { MetricSparkline } from "./MetricSparkline";
 
 function formatWeekRange(start: string, end: string): string {
-  const [sy, sm, sd] = start.split("-").map(Number);
+  const [, sm, sd] = start.split("-").map(Number);
   const [, em, ed] = end.split("-").map(Number);
   const MONTHS = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
   if (sm === em) return `${sd}–${ed} de ${MONTHS[sm - 1]}`;

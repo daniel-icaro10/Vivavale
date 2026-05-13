@@ -2,6 +2,7 @@
 
 import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
@@ -435,13 +436,13 @@ export function AnalyzeFlow() {
     <div className="flex min-h-screen flex-col bg-background">
       {/* Cabeçalho */}
       <header className="flex items-center justify-between px-4 py-4">
-        <a
+        <Link
           href="/"
           className="text-base font-semibold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
           aria-label="VivaLeve — voltar ao início"
         >
           VivaLeve
-        </a>
+        </Link>
         <span className="text-xs text-muted-foreground" aria-hidden="true">
           {step} de {TOTAL_STEPS}
         </span>
