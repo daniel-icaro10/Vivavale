@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
 import "./globals.css";
 
 const geist = Geist({
@@ -60,6 +61,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={geist.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <ServiceWorkerRegistration />
         {children}
       </body>
     </html>

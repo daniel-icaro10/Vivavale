@@ -7,10 +7,13 @@
  *   - DST é tratado via loop de verificação sobre Intl.DateTimeFormat.
  *   - O resultado final é sempre um Date UTC válido.
  *
- * Limitação conhecida:
+ * Limitações conhecidas:
  *   - Durante o "fall back" do DST (relógio volta 1h, ex: 02:30 existe duas vezes),
  *     a função resolve para a PRIMEIRA ocorrência. Para lembretes de wellness,
  *     esta ambiguidade é aceitável (máximo 1h de diferença, 1× por ano).
+ *   - weekdays: o dia de corte é calculado no timezone do lembrete, não do servidor.
+ *     Cruzamentos de meia-noite (ex: sexta 23h no Brazil = sábado UTC) são
+ *     corretamente tratados porque getLocalDOW usa o UTC resultante no timezone local.
  */
 
 /** Extrai hora e minuto de uma Date UTC interpretada no timezone informado. */
@@ -96,36 +99,94 @@ function localToUtc(
 }
 
 /**
- * Calcula o próximo UTC em que um reminder deve disparar.
+ * Retorna o dia da semana (0=Dom, 1=Seg, ..., 6=Sáb) de uma Date UTC
+ * interpretada no timezone informado.
+ *
+ * Usa o campo "weekday" do Intl.DateTimeFormat para garantir que o dia
+ * reflete a data LOCAL do usuário, não a data UTC do servidor.
+ */
+function getLocalDOW(utc: Date, timezone: string): number {
+  // "narrow" dá Mon/Tue/Wed/Thu/Fri/Sat/Sun em locale en-US
+  const narrow = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    weekday: "short",
+  }).format(utc);
+
+  const map: Record<string, number> = {
+    Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6,
+  };
+  return map[narrow] ?? 1;
+}
+
+/** Verifica se um dia da semana (0–6) é dia útil (segunda=1 a sexta=5). */
+function isWeekday(dow: number): boolean {
+  return dow >= 1 && dow <= 5;
+}
+
+/**
+ * Avança uma data UTC em N dias inteiros (00:00 UTC do dia seguinte).
+ * Retorna o ponto de referência meia-noite UTC para o dia-alvo.
+ */
+function addDays(utc: Date, days: number): Date {
+  return new Date(utc.getTime() + days * 24 * 60 * 60 * 1000);
+}
+
+/**
+ * Calcula o próximo UTC em que um reminder deve disparar,
+ * respeitando a recurrence (daily | weekdays).
  *
  * @param timeLocal  - Horário local no formato "HH:MM"
  * @param timezone   - IANA timezone (ex: "America/Sao_Paulo")
- * @param from       - Referência UTC (default: agora)
+ * @param recurrence - "daily" | "weekdays" (padrão: "daily")
+ * @param from       - Referência UTC (padrão: agora)
  * @returns          - Date UTC do próximo disparo
+ *
+ * Algoritmo:
+ *   1. Tenta hoje no timezone do usuário.
+ *   2. Se o horário já passou OU o dia não é válido para a recurrence,
+ *      avança um dia por vez (máximo 7 tentativas) até encontrar um dia válido.
+ *   3. Para weekdays, pula sábado (6) e domingo (0) automaticamente.
+ *
+ * Exemplos weekdays:
+ *   - Sexta 23:00 (passou): próximo = segunda-feira
+ *   - Sábado qualquer hora:  próximo = segunda-feira
+ *   - Domingo qualquer hora: próximo = segunda-feira
  */
 export function computeNextTriggerAt(
   timeLocal: string,
   timezone: string,
+  recurrence: "daily" | "weekdays" = "daily",
   from: Date = new Date(),
 ): Date {
   const [h, m] = timeLocal.split(":").map(Number);
 
-  // Obtém a data local atual no timezone do usuário
+  // Data local de referência no timezone do usuário
   const { y, mo, d } = getLocalYMD(from, timezone);
 
-  // Tenta hoje
+  // Candidato para hoje
   const todayUtc = localToUtc(y, mo, d, h, m, timezone);
-  if (todayUtc > from) return todayUtc;
+  const todayDow = getLocalDOW(todayUtc, timezone);
 
-  // Já passou hoje — tenta amanhã
-  // Usar Date.UTC com day+1 é seguro: o construtor trata overflow de mês/ano
-  const tomorrowSeed = new Date(Date.UTC(y, mo - 1, d + 1, 0, 0, 0));
-  const {
-    y: ty,
-    mo: tmo,
-    d: td,
-  } = getLocalYMD(tomorrowSeed, timezone);
-  return localToUtc(ty, tmo, td, h, m, timezone);
+  if (todayUtc > from && (recurrence === "daily" || isWeekday(todayDow))) {
+    return todayUtc;
+  }
+
+  // Avança dia a dia até encontrar um slot válido (máximo 7 dias = garante semana inteira)
+  for (let i = 1; i <= 7; i++) {
+    const nextSeed = addDays(new Date(Date.UTC(y, mo - 1, d, 0, 0, 0)), i);
+    const { y: ny, mo: nmo, d: nd } = getLocalYMD(nextSeed, timezone);
+    const candidate = localToUtc(ny, nmo, nd, h, m, timezone);
+    const dow = getLocalDOW(candidate, timezone);
+
+    if (recurrence === "daily" || isWeekday(dow)) {
+      return candidate;
+    }
+  }
+
+  // Fallback de segurança — nunca deve ser atingido para daily/weekdays
+  const fallbackSeed = addDays(new Date(Date.UTC(y, mo - 1, d, 0, 0, 0)), 1);
+  const { y: fy, mo: fmo, d: fd } = getLocalYMD(fallbackSeed, timezone);
+  return localToUtc(fy, fmo, fd, h, m, timezone);
 }
 
 /**

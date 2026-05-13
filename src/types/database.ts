@@ -1,6 +1,6 @@
 /**
  * Tipos do schema Supabase — VivaLeve.
- * Sincronizado com migrations 001 + 002 + 003.
+ * Sincronizado com migrations 001 + 002 + 003 + 004.
  * Substituir pelo output de `npx supabase gen types typescript` após configurar o projeto.
  */
 export type Database = {
@@ -112,6 +112,9 @@ export type Database = {
           active: boolean;
           last_sent_at: string | null;
           next_trigger_at: string | null;
+          last_error: string | null;
+          error_count: number;
+          last_attempt_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -125,6 +128,9 @@ export type Database = {
           active?: boolean;
           last_sent_at?: string | null;
           next_trigger_at?: string | null;
+          last_error?: string | null;
+          error_count?: number;
+          last_attempt_at?: string | null;
         };
         Update: {
           medication_id?: string;
@@ -134,6 +140,9 @@ export type Database = {
           active?: boolean;
           last_sent_at?: string | null;
           next_trigger_at?: string | null;
+          last_error?: string | null;
+          error_count?: number;
+          last_attempt_at?: string | null;
         };
         Relationships: [
           {
@@ -149,6 +158,35 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      push_subscriptions: {
+        Row: {
+          id: string;
+          user_id: string;
+          endpoint: string;
+          p256dh_key: string;
+          auth_key: string;
+          user_agent: string | null;
+          active: boolean;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          endpoint: string;
+          p256dh_key: string;
+          auth_key: string;
+          user_agent?: string | null;
+          active?: boolean;
+        };
+        Update: {
+          p256dh_key?: string;
+          auth_key?: string;
+          user_agent?: string | null;
+          active?: boolean;
+        };
+        Relationships: [];
       };
       notification_preferences: {
         Row: {

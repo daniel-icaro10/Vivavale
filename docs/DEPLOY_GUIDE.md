@@ -15,9 +15,10 @@
 No SQL Editor do Supabase, executar cada arquivo de migration em ordem:
 
 ```
-supabase/migrations/001_profiles.sql
-supabase/migrations/002_daily_logs_medications.sql
-supabase/migrations/003_reminders_notification_preferences.sql
+supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_schema_corrections.sql
+supabase/migrations/003_reminders.sql
+supabase/migrations/004_notifications.sql
 ```
 
 ### 1.2 — Configurar Auth URLs
@@ -58,8 +59,11 @@ Em **Settings → Environment Variables**, adicionar:
 | `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Project Settings → API → URL | Production, Preview, Development |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Project Settings → API → anon public | Production, Preview, Development |
 | `NEXT_PUBLIC_SITE_URL` | URL de produção (ex: `https://vivaleve.app`) | **Production apenas** |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Gerada com `npx web-push generate-vapid-keys` | Production, Preview, Development |
 
 > **Atenção:** `NEXT_PUBLIC_SITE_URL` é usado no link de recovery de senha. Em Preview não precisa ser definido — o fluxo de reset não funciona corretamente em ambientes Preview por design.
+
+> **Sobre VAPID:** `NEXT_PUBLIC_VAPID_PUBLIC_KEY` é a chave pública (segura para expor). A chave privada (`VAPID_PRIVATE_KEY`) fica apenas nos segredos da Edge Function — nunca no app Next.js.
 
 ### 2.3 — Fazer o primeiro deploy
 
@@ -97,6 +101,13 @@ Execute todos os passos em modo anônimo (aba privada):
 - [ ] Fazer registro diário
 - [ ] Editar perfil (nome e fuso horário)
 - [ ] Visualizar histórico
+
+### Notificações push
+- [ ] Ativar notificações no perfil (Chrome Desktop/Android)
+- [ ] Confirmar que subscription aparece em `push_subscriptions` no Supabase
+- [ ] Invocar Edge Function manualmente: `supabase functions invoke send-reminders`
+- [ ] Confirmar que notificação aparece no dispositivo
+- [ ] Desativar notificações → subscription removida da tabela
 
 ### Mobile
 - [ ] Testar no iOS Safari (iPhone físico ou BrowserStack)

@@ -28,6 +28,11 @@ export type NotificationPreferencesInsert =
 export type NotificationPreferencesUpdate =
   Database["public"]["Tables"]["notification_preferences"]["Update"];
 
+export type PushSubscriptionRow =
+  Database["public"]["Tables"]["push_subscriptions"]["Row"];
+export type PushSubscriptionInsert =
+  Database["public"]["Tables"]["push_subscriptions"]["Insert"];
+
 /** Nível de 0–10 usado em escalas de sintoma */
 export type SymptomLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
 

@@ -88,8 +88,12 @@ export async function createReminderAction(
   });
   if (!fullPayload.success) return { error: "Dados inválidos." };
 
-  // Calcular next_trigger_at timezone-safe
-  const nextTriggerAt = computeNextTriggerAt(timeLocal, timezone);
+  // Calcular next_trigger_at timezone-safe, respeitando recurrence
+  const nextTriggerAt = computeNextTriggerAt(
+    timeLocal,
+    timezone,
+    fullPayload.data.recurrence === "weekdays" ? "weekdays" : "daily",
+  );
 
   try {
     const { error } = await supabase.from("reminders").insert({
@@ -153,7 +157,11 @@ export async function updateReminderAction(
   });
   if (!fullPayload.success) return { error: "Dados inválidos." };
 
-  const nextTriggerAt = computeNextTriggerAt(timeLocal, timezone);
+  const nextTriggerAt = computeNextTriggerAt(
+    timeLocal,
+    timezone,
+    fullPayload.data.recurrence === "weekdays" ? "weekdays" : "daily",
+  );
 
   try {
     const { error } = await supabase
@@ -237,10 +245,10 @@ export async function toggleReminderAction(
     if (active) {
       const timezone = await getUserTimezone(user.id);
 
-      // Busca time_local do reminder existente para recalcular
+      // Busca time_local, timezone e recurrence do reminder para recalcular
       const { data: existing } = await supabase
         .from("reminders")
-        .select("time_local, timezone")
+        .select("time_local, timezone, recurrence")
         .eq("id", id)
         .eq("user_id", user.id)
         .single();
@@ -248,9 +256,10 @@ export async function toggleReminderAction(
       if (existing) {
         const timeLocal = normalizeTimeLocal(existing.time_local);
         const tz = timezone || existing.timezone;
+        const rec = existing.recurrence === "weekdays" ? "weekdays" : "daily";
         updatePayload = {
           active: true,
-          next_trigger_at: computeNextTriggerAt(timeLocal, tz).toISOString(),
+          next_trigger_at: computeNextTriggerAt(timeLocal, tz, rec).toISOString(),
         };
       }
     }
