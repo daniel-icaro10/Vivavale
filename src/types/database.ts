@@ -188,6 +188,25 @@ export type Database = {
         };
         Relationships: [];
       };
+      public_symptom_sessions: {
+        Row: {
+          id: string;
+          session_token: string;
+          answers: Record<string, unknown>;
+          computed_scores: Record<string, unknown>;
+          computed_insights: Record<string, unknown>;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          session_token?: string;
+          answers: Record<string, unknown>;
+          computed_scores: Record<string, unknown>;
+          computed_insights: Record<string, unknown>;
+        };
+        Update: never;
+        Relationships: [];
+      };
       notification_preferences: {
         Row: {
           user_id: string;

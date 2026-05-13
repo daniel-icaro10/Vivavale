@@ -2,15 +2,17 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { env } from "@/lib/env";
 
-// Rotas acessíveis sem autenticação.
-// Usuário autenticado que acessa qualquer rota pública é redirecionado para /dashboard.
-const PUBLIC_ROUTES = [
+// Rotas de autenticação: públicas, mas usuários autenticados são redirecionados para /dashboard.
+const AUTH_ROUTES = [
   "/login",
   "/register",
   "/reset-password",
-  "/update-password", // Necessário para o fluxo de recuperação de senha
+  "/update-password",
   "/auth/callback",
 ];
+
+// Rotas abertas: públicas e acessíveis mesmo para usuários autenticados (sem redirect para /dashboard).
+const OPEN_ROUTES = ["/", "/analyze", "/results"];
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -40,28 +42,29 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    pathname.startsWith(route),
+
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  const isOpenRoute = OPEN_ROUTES.some(
+    (r) => pathname === r || pathname.startsWith(r + "?") || pathname.startsWith(r + "/"),
   );
 
-  if (!user && !isPublicRoute) {
+  // Não autenticado tentando acessar rota protegida → /login
+  if (!user && !isAuthRoute && !isOpenRoute) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  if (user && isPublicRoute && pathname !== "/auth/callback") {
+  // Autenticado tentando acessar rotas de auth (exceto callback) → /dashboard
+  if (user && isAuthRoute && pathname !== "/auth/callback") {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
+  // Rotas abertas: qualquer usuário (autenticado ou não) pode acessar livremente.
   return response;
 }
 
 export const config = {
   matcher: [
-    // Executar em todas as rotas exceto:
-    // - _next/static: assets estáticos do Next.js
-    // - _next/image: imagens otimizadas
-    // - favicon.ico, manifest.json: arquivos públicos sem auth
-    // - Extensões de arquivo comuns (imagens, fontes, etc.)
-    "/((?!_next/static|_next/image|favicon.ico|manifest.json|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$).*)",
+    // Executa em todas as rotas exceto assets estáticos, imagens, favicon, manifest e sw.js
+    "/((?!_next/static|_next/image|favicon.ico|manifest.json|sw\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|woff|woff2)$).*)",
   ],
 };
