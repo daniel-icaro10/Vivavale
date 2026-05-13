@@ -7,6 +7,17 @@ import { buildTimelineReflectionPrompt } from "../prompts/timeline-reflection";
 import { fallbackNarrative } from "../utils/fallbackNarrative";
 import { parseNarrative } from "../structured/parser/parseNarrative";
 import { renderNarrative } from "../structured/renderers/renderNarrative";
+import { trackEvent } from "../observability/telemetry/trackEvent";
+import { SESSION_ID } from "../observability/telemetry/runtimeSession";
+import { initTelemetry } from "../observability/telemetry/initTelemetry";
+import { makeGenerationStarted } from "../observability/events/generationStarted";
+import { makeGenerationCompleted } from "../observability/events/generationCompleted";
+import { makeGenerationFailed } from "../observability/events/generationFailed";
+import { makeFallbackTriggered } from "../observability/events/fallbackTriggered";
+import { makeParserRecovered } from "../observability/events/parserRecovered";
+import { makeTimeoutTriggered } from "../observability/events/timeoutTriggered";
+import { makeCacheHit, makeCacheMiss } from "../observability/events/cacheEvents";
+import type { StructuredNarrativeFieldName } from "../structured/types/structuredNarrative";
 
 const AI_TIMEOUT_MS = 4_000;
 
@@ -23,11 +34,6 @@ function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
     t: ctx.trends.map((t) => `${t.dimension}:${t.trend}`).join(","),
     c: ctx.correlations.map((c) => c.label).join(","),
   })}`;
-}
-
-function logAI(event: string, data?: Record<string, unknown>) {
-  // Observabilidade: apenas metadados — NUNCA logar conteúdo do usuário.
-  console.log(`[VivaLeve/AI] ${event}`, data ?? "");
 }
 
 let openaiClient: OpenAI | null = null;
@@ -49,6 +55,8 @@ export async function generateNarrative(
   ctx: NarrativeContext,
   type: NarrativeType,
 ): Promise<NarrativeResult> {
+  initTelemetry();
+
   // Feature flag: se desabilitado, fallback determinístico sem chamada de IA.
   if (!env.aiEnabled || !env.openaiApiKey) {
     return { text: fallbackNarrative(ctx, type), isAI: false };
@@ -59,9 +67,12 @@ export async function generateNarrative(
   const cached = cache.get(cacheKey);
 
   if (cached && cached.expiresAt > now) {
-    logAI("cache_hit", { type });
+    trackEvent(makeCacheHit(SESSION_ID, type));
     return { text: cached.text, isAI: true };
   }
+
+  trackEvent(makeCacheMiss(SESSION_ID, type));
+  trackEvent(makeGenerationStarted(SESSION_ID, type, env.openaiModel));
 
   const start = Date.now();
 
@@ -75,8 +86,8 @@ export async function generateNarrative(
       const response = await getClient().chat.completions.create(
         {
           model: env.openaiModel,
-          temperature: 0.3,     // menor que fase 16 — JSON estruturado tolera menos criatividade
-          max_tokens: 300,      // 4 campos × ~75 tokens cada
+          temperature: 0.3,
+          max_tokens: 300,
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: NARRATIVE_SYSTEM_PROMPT },
@@ -91,27 +102,51 @@ export async function generateNarrative(
     }
 
     const latencyMs = Date.now() - start;
-    logAI("generated", { type, latencyMs, rawLength: raw.length });
 
     // Pipeline estruturado: parse → validate per field → partial fallback → render
     const { result, logs } = parseNarrative(raw, ctx, type);
 
-    // Encaminha logs do parser para observabilidade
+    // Traduz logs do parser em eventos de telemetria
     for (const entry of logs) {
-      logAI(entry.event, entry.data);
+      if (entry.event === "invalid_json" || entry.event === "missing_field") {
+        trackEvent(makeGenerationFailed(SESSION_ID, type, "invalid_json", latencyMs));
+        trackEvent(makeFallbackTriggered(SESSION_ID, type, "invalid_json", true));
+      } else if (entry.event === "field_validation_failed") {
+        const field = entry.data?.field as StructuredNarrativeFieldName | undefined;
+        const reason = (entry.data?.reason as string | undefined) ?? "unknown";
+        trackEvent({
+          type: "field_validation_failed",
+          sessionId: SESSION_ID,
+          ts: Date.now(),
+          narrativeType: type,
+          field: field ?? "opening",
+          reason,
+        });
+      } else if (entry.event === "partial_fallback") {
+        const aiCount = (entry.data?.aiCount as number | undefined) ?? 0;
+        const fbCount = (entry.data?.fallbackCount as number | undefined) ?? 0;
+        trackEvent(makeParserRecovered(SESSION_ID, type, aiCount));
+        trackEvent(makeFallbackTriggered(SESSION_ID, type, "parser_failure", false));
+        // generation_completed with partial fallback
+        trackEvent(
+          makeGenerationCompleted(SESSION_ID, type, env.openaiModel, latencyMs, aiCount, fbCount),
+        );
+      }
     }
 
-    if (result.hadPartialFallback) {
-      logAI("partial_fallback", {
-        type,
-        aiFields: Object.entries(result.fields)
-          .filter(([, v]) => v.isAI)
-          .map(([k]) => k),
-      });
+    // Se nenhum log especial, geração foi completa com AI
+    const hadParseFailure = logs.some(
+      (l) => l.event === "invalid_json" || l.event === "missing_field",
+    );
+    const hadPartialFallback = logs.some((l) => l.event === "partial_fallback");
+
+    if (!hadParseFailure && !hadPartialFallback) {
+      trackEvent(
+        makeGenerationCompleted(SESSION_ID, type, env.openaiModel, latencyMs, 4, 0),
+      );
     }
 
     if (!result.anyAI) {
-      // Parse falhou completamente — usa fallback unificado (já contido no result)
       const text = renderNarrative(result);
       return { text, isAI: false, latencyMs };
     }
@@ -126,11 +161,13 @@ export async function generateNarrative(
     const latencyMs = Date.now() - start;
     const isTimeout = err instanceof Error && err.name === "AbortError";
 
-    logAI(isTimeout ? "timeout" : "error", {
-      type,
-      latencyMs,
-      message: err instanceof Error ? err.message : "unknown",
-    });
+    if (isTimeout) {
+      trackEvent(makeTimeoutTriggered(SESSION_ID, type, latencyMs));
+      trackEvent(makeFallbackTriggered(SESSION_ID, type, "timeout", true));
+    } else {
+      trackEvent(makeGenerationFailed(SESSION_ID, type, "provider_error", latencyMs));
+      trackEvent(makeFallbackTriggered(SESSION_ID, type, "provider_error", true));
+    }
 
     return { text: fallbackNarrative(ctx, type), isAI: false, latencyMs };
   }
