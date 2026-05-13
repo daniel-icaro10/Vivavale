@@ -152,7 +152,10 @@ async function processReminder(reminder: any, now: Date): Promise<boolean> {
 
   await supabase
     .from("reminders")
-    .update({ last_attempt_at: now.toISOString() })
+    .update({
+      last_attempt_at: now.toISOString(),
+      ...(anySent ? { last_sent_at: now.toISOString() } : {}),
+    })
     .eq("id", reminder.id);
 
   await advanceNextTrigger(reminder, now);

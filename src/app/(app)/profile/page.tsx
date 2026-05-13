@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { createServerClient } from "@/lib/supabase/server";
 import { PageHeader } from "@/components/shared/layout/PageHeader";
 import { ProfileForm } from "@/features/profile/components/ProfileForm";
+import { ExportDataButton } from "@/features/profile/components/ExportDataButton";
+import { DeleteAccountSection } from "@/features/profile/components/DeleteAccountSection";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
 import { PushToggle } from "@/features/notifications/components/PushToggle";
 import { NotificationPreferencesForm } from "@/features/notifications/components/NotificationPreferencesForm";
@@ -82,6 +84,28 @@ export default async function ProfilePage() {
               quiet_hours_start={data?.notifPrefs?.quiet_hours_start ?? null}
               quiet_hours_end={data?.notifPrefs?.quiet_hours_end ?? null}
             />
+          </div>
+        </section>
+
+        {/* Dados pessoais — LGPD */}
+        <section
+          className="space-y-3 rounded-xl border border-border bg-card px-5 py-5"
+          aria-labelledby="data-heading"
+        >
+          <div>
+            <h2
+              id="data-heading"
+              className="text-base font-semibold text-foreground"
+            >
+              Seus dados
+            </h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">
+              Você pode exportar ou excluir todos os seus dados a qualquer momento.
+            </p>
+          </div>
+          <div className="border-t border-border pt-4 space-y-4">
+            <ExportDataButton />
+            <DeleteAccountSection />
           </div>
         </section>
 

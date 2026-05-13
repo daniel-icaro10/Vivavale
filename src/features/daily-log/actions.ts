@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { dailyLogSchema, type DailyLogFormData } from "./schemas";
 
 type ErrorResult = { error: string };
@@ -22,6 +23,9 @@ export async function saveDailyLogAction(
   if (userError || !user) {
     return { error: "Sessão expirada. Faça login novamente." };
   }
+
+  const allowed = await checkRateLimit("save_daily_log", user.id);
+  if (!allowed) return { error: "Muitas solicitações. Aguarde alguns segundos." };
 
   const { error } = await supabase.from("daily_logs").upsert(
     {

@@ -2,6 +2,7 @@
 
 import { refresh } from "next/cache";
 import { createServerClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { medicationSchema, type MedicationFormData } from "./schemas";
 
 type ErrorResult = { error: string };
@@ -22,6 +23,9 @@ export async function createMedicationAction(
   if (userError || !user) {
     return { error: "Sessão expirada. Faça login novamente." };
   }
+
+  const allowed = await checkRateLimit("medication_write", user.id);
+  if (!allowed) return { error: "Muitas solicitações. Aguarde alguns segundos." };
 
   try {
     const { error } = await supabase.from("medications").insert({
@@ -60,6 +64,9 @@ export async function updateMedicationAction(
     return { error: "Sessão expirada. Faça login novamente." };
   }
 
+  const allowed2 = await checkRateLimit("medication_write", user.id);
+  if (!allowed2) return { error: "Muitas solicitações. Aguarde alguns segundos." };
+
   try {
     const { error } = await supabase
       .from("medications")
@@ -95,6 +102,9 @@ export async function deleteMedicationAction(
   if (userError || !user) {
     return { error: "Sessão expirada. Faça login novamente." };
   }
+
+  const allowed3 = await checkRateLimit("medication_write", user.id);
+  if (!allowed3) return { error: "Muitas solicitações. Aguarde alguns segundos." };
 
   try {
     const { error } = await supabase

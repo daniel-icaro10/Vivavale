@@ -240,6 +240,10 @@ export type Database = {
         Args: { p_token: string };
         Returns: Record<string, unknown> | null;
       };
+      check_rate_limit: {
+        Args: { p_key: string; p_max_requests: number; p_window_seconds: number };
+        Returns: boolean;
+      };
     };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };

@@ -26,4 +26,7 @@ export const env = {
   openaiApiKey: process.env.OPENAI_API_KEY ?? null,
   // Modelo primário e fallback dentro da tier OpenAI.
   openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+
+  // Service role key — nunca exposta ao cliente. Apenas server-side para admin ops.
+  serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? null,
 } as const;

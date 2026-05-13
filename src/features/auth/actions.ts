@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createServerClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 import { env } from "@/lib/env";
 import {
   loginSchema,
@@ -46,6 +47,9 @@ export async function loginAction(
   const parsed = loginSchema.safeParse(data);
   if (!parsed.success) return { error: "Dados inválidos." };
 
+  const allowed = await checkRateLimit("login", parsed.data.email);
+  if (!allowed) return { error: "Muitas tentativas. Aguarde alguns minutos." };
+
   const supabase = await createServerClient();
   const { error } = await supabase.auth.signInWithPassword(parsed.data);
 
@@ -59,6 +63,9 @@ export async function registerAction(
 ): Promise<ErrorResult | ConfirmationResult> {
   const parsed = registerSchema.safeParse(data);
   if (!parsed.success) return { error: "Dados inválidos." };
+
+  const allowed = await checkRateLimit("register", parsed.data.email);
+  if (!allowed) return { error: "Muitas tentativas. Aguarde alguns minutos." };
 
   const supabase = await createServerClient();
   const { data: authData, error } = await supabase.auth.signUp({
@@ -85,6 +92,9 @@ export async function resetPasswordAction(
 ): Promise<ErrorResult | SuccessResult> {
   const parsed = resetPasswordSchema.safeParse(data);
   if (!parsed.success) return { error: "E-mail inválido." };
+
+  const allowed = await checkRateLimit("reset_password", parsed.data.email);
+  if (!allowed) return { error: "Muitas tentativas. Aguarde alguns minutos." };
 
   const supabase = await createServerClient();
   const { error } = await supabase.auth.resetPasswordForEmail(
