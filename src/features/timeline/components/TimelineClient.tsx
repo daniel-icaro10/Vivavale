@@ -57,7 +57,8 @@ export function TimelineClient({
   const [cursor, setCursor] = useState<string | null>(initialCursor);
   const [isPending, startTransition] = useTransition();
 
-  const dayGroups: DayGroup[] = groupByDay(logs);
+  const todayStr = new Date().toLocaleDateString("sv-SE");
+  const dayGroups: DayGroup[] = groupByDay(logs, todayStr);
   const weeklyInsights = buildWeeklyInsights(logs);
 
   function loadMore() {

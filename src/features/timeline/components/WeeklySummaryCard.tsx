@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import type { WeeklyInsights } from "@/features/insights/types/insights";
 import type { DailyLog } from "@/types/app";
 import { MetricSparkline } from "./MetricSparkline";
@@ -14,10 +17,10 @@ function formatWeekRange(start: string, end: string): string {
 }
 
 const TREND_STYLES: Record<string, { bg: string; text: string; icon: string; label: string }> = {
-  improving:        { bg: "oklch(0.958 0.040 155 / 0.5)", text: "oklch(0.400 0.100 155)", icon: "↑", label: "Melhora" },
-  worsening:        { bg: "oklch(0.970 0.040 25  / 0.5)", text: "oklch(0.500 0.160 25)",  icon: "↓", label: "Piora"   },
-  stable:           { bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "→", label: "Estável" },
-  insufficient_data:{ bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "–", label: "Poucos dados" },
+  improving:         { bg: "oklch(0.958 0.040 155 / 0.5)", text: "oklch(0.400 0.100 155)", icon: "↑", label: "Melhora" },
+  worsening:         { bg: "oklch(0.970 0.040 25  / 0.5)", text: "oklch(0.500 0.160 25)",  icon: "↓", label: "Piora"   },
+  stable:            { bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "→", label: "Estável" },
+  insufficient_data: { bg: "oklch(0.968 0.008 80  / 0.5)", text: "oklch(0.476 0.020 258)", icon: "–", label: "Poucos dados" },
 };
 
 function TrendChip({ trend }: { trend: WeeklyInsights["trends"][number] }) {
@@ -47,10 +50,19 @@ interface WeeklySummaryCardProps {
   sparkLogs: DailyLog[];
 }
 
+const TRENDS_PREVIEW = 2;
+
 export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProps) {
+  const [trendsExpanded, setTrendsExpanded] = useState(false);
+
   const sorted = sparkLogs.slice().sort((a, b) => a.date.localeCompare(b.date));
   const sparkPain  = sorted.map((l) => ({ date: l.date.slice(5), value: l.pain_level }));
   const sparkSleep = sorted.map((l) => ({ date: l.date.slice(5), value: l.sleep_quality }));
+
+  const visibleTrends = trendsExpanded
+    ? insights.trends
+    : insights.trends.slice(0, TRENDS_PREVIEW);
+  const hasMoreTrends = insights.trends.length > TRENDS_PREVIEW;
 
   return (
     <section
@@ -58,7 +70,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-200 float-hover"
       style={{ border: "1px solid oklch(0.928 0.010 85)" }}
     >
-      {/* Header do capítulo */}
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
@@ -83,7 +95,9 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       </div>
 
       {/* Resumo narrativo — editorial */}
-      <p className="text-[15px] leading-[1.75] text-muted-foreground max-w-reading">{insights.summary}</p>
+      <p className="text-[15px] leading-[1.75] text-muted-foreground max-w-reading">
+        {insights.summary}
+      </p>
 
       {/* Sparklines */}
       {sparkPain.length >= 2 && (
@@ -93,12 +107,20 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
         </div>
       )}
 
-      {/* Tendências */}
+      {/* Tendências com progressive disclosure */}
       {insights.trends.length > 0 && (
         <div className="space-y-2">
-          {insights.trends.map((t) => (
+          {visibleTrends.map((t) => (
             <TrendChip key={t.dimension} trend={t} />
           ))}
+          {hasMoreTrends && !trendsExpanded && (
+            <button
+              onClick={() => setTrendsExpanded(true)}
+              className="w-full pt-2 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              ver mais padrões
+            </button>
+          )}
         </div>
       )}
     </section>

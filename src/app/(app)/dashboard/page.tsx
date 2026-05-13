@@ -21,28 +21,76 @@ const MONTHS_PT = [
   "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
 ] as const;
 
+// ─── Types ────────────────────────────────────────────────
+type DashboardMode =
+  | "onboarding"     // sem medicamentos — primeiro acesso
+  | "recovery"       // retornando após 5+ dias de ausência
+  | "encouragement"  // tem medicamentos mas ainda não registrou esta semana
+  | "continuity"     // streak ativa — logou hoje e 4+ dias
+  | "reflection";    // estado padrão — alguns dados, rotina em andamento
+
 type DashboardData = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>;
 
-function getHeroContext(data: DashboardData): string {
-  const { todayLog, daysThisWeek, lastLogDate, todayStr } = data;
+// ─── Adaptive mode ────────────────────────────────────────
+function getDashboardMode(data: DashboardData): DashboardMode {
+  const { hasMedications, todayLog, daysThisWeek, lastLogDate, todayStr } = data;
 
-  if (todayLog) {
-    if (daysThisWeek >= 5) return "Você está presente e isso faz diferença.";
-    if (daysThisWeek >= 3) return "Boa sequência essa semana.";
-    return "Bom saber como você está hoje.";
+  if (!hasMedications) return "onboarding";
+
+  if (lastLogDate) {
+    const daysSince = Math.floor(
+      (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
+    );
+    if (daysSince >= 5) return "recovery";
   }
 
-  if (!lastLogDate) return "Pronto para começar o seu acompanhamento.";
+  if (daysThisWeek === 0) return "encouragement";
+  if (todayLog && daysThisWeek >= 4) return "continuity";
 
-  const daysSince = Math.floor(
-    (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
-  );
-
-  if (daysSince <= 1) return "Como está sendo esse dia?";
-  if (daysSince <= 4) return "Quando quiser, adoraríamos saber como você está.";
-  return "Sem pressão — estamos aqui quando fizer sentido.";
+  return "reflection";
 }
 
+// ─── Contextual continuity message ───────────────────────
+function getContinuityContext(data: DashboardData, mode: DashboardMode): string {
+  const { todayLog, daysThisWeek, lastLogDate, todayStr } = data;
+
+  switch (mode) {
+    case "onboarding":
+      return "Pronto para começar o seu acompanhamento.";
+
+    case "recovery": {
+      const daysSince = lastLogDate
+        ? Math.floor(
+            (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
+          )
+        : null;
+      return daysSince && daysSince <= 14
+        ? "É bom ter você por aqui de novo."
+        : "Quando quiser retomar, estamos por aqui.";
+    }
+
+    case "encouragement":
+      return "Cada registro conta, mesmo que seja o primeiro da semana.";
+
+    case "continuity":
+      if (daysThisWeek >= 6) return "Você está presente todos os dias. Isso tem valor.";
+      if (daysThisWeek >= 4) return "Você está presente e isso faz diferença.";
+      return "Boa sequência essa semana.";
+
+    case "reflection":
+      if (todayLog) return "Bom saber como você está hoje.";
+      if (lastLogDate) {
+        const daysSince = Math.floor(
+          (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
+        );
+        if (daysSince <= 1) return "Como está sendo esse dia?";
+        if (daysSince <= 4) return "Quando quiser registrar, estamos por aqui.";
+      }
+      return "Como você está?";
+  }
+}
+
+// ─── Date helpers ─────────────────────────────────────────
 function formatDatePt(todayStr: string): string {
   const [yearStr, monthStr, dayStr] = todayStr.split("-");
   const date = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
@@ -51,6 +99,7 @@ function formatDatePt(todayStr: string): string {
   return `${weekday}, ${Number(dayStr)} de ${month}`;
 }
 
+// ─── Data fetching ────────────────────────────────────────
 async function getDashboardData() {
   const supabase = await createServerClient();
   const {
@@ -124,17 +173,19 @@ async function getDashboardData() {
   };
 }
 
+// ─── Page ─────────────────────────────────────────────────
 export default async function DashboardPage() {
   const data = await getDashboardData();
   if (!data) return null;
 
+  const mode = getDashboardMode(data);
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
-  const heroContext = getHeroContext(data);
+  const contextMessage = getContinuityContext(data, mode);
 
   return (
     <div className="space-y-5">
-      {/* Hero — saudação + data + contexto emocional */}
+      {/* Hero — contextual */}
       <header className="pb-1 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
           {dateLabel}
@@ -143,11 +194,12 @@ export default async function DashboardPage() {
           {firstName ? `Olá, ${firstName}` : "Olá"}
         </h1>
         <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {heroContext}
+          {contextMessage}
         </p>
       </header>
 
-      {!data.hasMedications ? (
+      {/* ── Onboarding ────────────────────────────────────── */}
+      {mode === "onboarding" && (
         <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
           <OnboardingChecklist
             hasMedications={false}
@@ -155,20 +207,53 @@ export default async function DashboardPage() {
             hasReminders={data.hasReminders}
           />
         </div>
-      ) : (
+      )}
+
+      {/* ── Recovery: foco no reconectar ──────────────────── */}
+      {mode === "recovery" && (
         <>
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
             <TodayCard todayLog={data.todayLog} />
           </div>
-
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-150">
+            <GuidanceCard
+              hasMedications={data.hasMedications}
+              hasReminders={data.hasReminders}
+              hasLoggedThisWeek={data.hasLoggedThisWeek}
+            />
+          </div>
+        </>
+      )}
+
+      {/* ── Encouragement: foco no primeiro registro ──────── */}
+      {mode === "encouragement" && (
+        <>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
+            <TodayCard todayLog={data.todayLog} />
+          </div>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-150">
+            <GuidanceCard
+              hasMedications={data.hasMedications}
+              hasReminders={data.hasReminders}
+              hasLoggedThisWeek={data.hasLoggedThisWeek}
+            />
+          </div>
+        </>
+      )}
+
+      {/* ── Continuity: streak — InsightsStrip em destaque ── */}
+      {mode === "continuity" && (
+        <>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
             <InsightsStrip
               daysThisWeek={data.daysThisWeek}
               activeMedicationsCount={data.activeMedicationsCount}
               activeRemindersCount={data.activeRemindersCount}
             />
           </div>
-
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-150">
+            <TodayCard todayLog={data.todayLog} />
+          </div>
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-225">
             <GuidanceCard
               hasMedications={data.hasMedications}
@@ -176,7 +261,29 @@ export default async function DashboardPage() {
               hasLoggedThisWeek={data.hasLoggedThisWeek}
             />
           </div>
+        </>
+      )}
 
+      {/* ── Reflection: ordem padrão ──────────────────────── */}
+      {mode === "reflection" && (
+        <>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
+            <TodayCard todayLog={data.todayLog} />
+          </div>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-150">
+            <InsightsStrip
+              daysThisWeek={data.daysThisWeek}
+              activeMedicationsCount={data.activeMedicationsCount}
+              activeRemindersCount={data.activeRemindersCount}
+            />
+          </div>
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-225">
+            <GuidanceCard
+              hasMedications={data.hasMedications}
+              hasReminders={data.hasReminders}
+              hasLoggedThisWeek={data.hasLoggedThisWeek}
+            />
+          </div>
           <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-300">
             <RecentActivity
               lastLogDate={data.lastLogDate}
@@ -186,10 +293,10 @@ export default async function DashboardPage() {
         </>
       )}
 
-      {/* Link para perfil */}
+      {/* Perfil */}
       <Link
         href="/profile"
-        className="flex items-center justify-between rounded-2xl bg-card px-5 py-4 transition-all duration-200 hover:shadow-card active:scale-[0.99] animate-in fade-in-0 slide-in-from-bottom-2 anim-delay-300"
+        className="flex items-center justify-between rounded-2xl bg-card px-5 py-4 float-hover active:scale-[0.985] animate-in fade-in-0 slide-in-from-bottom-2 anim-delay-300"
         style={{ border: "1px solid oklch(0.928 0.010 85)" }}
         aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
       >
