@@ -106,6 +106,12 @@
 /* Seção com espaçamento generoso — ritmo vertical de produto premium */
 @utility section-gap { gap: 1.75rem; }
 
+/* ─── Motion — stagger delays para entrada escalonada ──── */
+@utility anim-delay-75  { animation-delay: 75ms; }
+@utility anim-delay-150 { animation-delay: 150ms; }
+@utility anim-delay-225 { animation-delay: 225ms; }
+@utility anim-delay-300 { animation-delay: 300ms; }
+
 /* ─────────────────────────────────────────────────────────
    Slider VivaLeve
    --vl-pct: progresso em %, setado via inline style no React.

@@ -55,7 +55,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
   return (
     <section
       aria-labelledby="weekly-summary-heading"
-      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6"
+      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-200"
       style={{ border: "1px solid oklch(0.928 0.010 85)" }}
     >
       {/* Header do capítulo */}
@@ -88,8 +88,8 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       {/* Sparklines */}
       {sparkPain.length >= 2 && (
         <div className="grid grid-cols-2 gap-4">
-          <MetricSparkline data={sparkPain}  label="Dor" />
-          <MetricSparkline data={sparkSleep} label="Sono" />
+          <MetricSparkline data={sparkPain}  label="Dor"  color="oklch(0.545 0.155 277)" />
+          <MetricSparkline data={sparkSleep} label="Sono" color="oklch(0.720 0.115 228)" />
         </div>
       )}
 

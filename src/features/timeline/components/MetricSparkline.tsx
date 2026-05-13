@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
-  YAxis,
-  Tooltip,
-} from "recharts";
+import { ResponsiveContainer, LineChart, Line, YAxis } from "recharts";
 
 interface SparkPoint {
   date: string;
@@ -19,34 +13,31 @@ interface MetricSparklineProps {
   color?: string;
 }
 
-export function MetricSparkline({ data, label, color = "hsl(var(--primary))" }: MetricSparklineProps) {
+export function MetricSparkline({
+  data,
+  label,
+  color = "oklch(0.545 0.155 277)",
+}: MetricSparklineProps) {
   if (data.length < 2) return null;
 
   return (
     <div className="w-full">
-      <p className="mb-1 text-xs text-muted-foreground">{label}</p>
-      <ResponsiveContainer width="100%" height={48}>
-        <LineChart data={data} margin={{ top: 4, right: 4, bottom: 0, left: 0 }}>
+      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
+        {label}
+      </p>
+      <ResponsiveContainer width="100%" height={56}>
+        <LineChart data={data} margin={{ top: 4, right: 2, bottom: 2, left: 2 }}>
           <YAxis domain={[0, 10]} hide />
-          <Tooltip
-            contentStyle={{
-              fontSize: 11,
-              padding: "4px 8px",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: 6,
-              background: "hsl(var(--card))",
-              color: "hsl(var(--foreground))",
-            }}
-            formatter={(value) => [value, label]}
-            labelFormatter={(date) => String(date)}
-          />
           <Line
-            type="monotone"
+            type="basis"
             dataKey="value"
             stroke={color}
-            strokeWidth={1.5}
+            strokeWidth={2}
             dot={false}
-            activeDot={{ r: 3 }}
+            activeDot={false}
+            isAnimationActive
+            animationDuration={600}
+            animationEasing="ease-out"
           />
         </LineChart>
       </ResponsiveContainer>

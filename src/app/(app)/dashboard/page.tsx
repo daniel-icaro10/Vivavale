@@ -21,6 +21,28 @@ const MONTHS_PT = [
   "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
 ] as const;
 
+type DashboardData = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>;
+
+function getHeroContext(data: DashboardData): string {
+  const { todayLog, daysThisWeek, lastLogDate, todayStr } = data;
+
+  if (todayLog) {
+    if (daysThisWeek >= 5) return "Você está presente e isso faz diferença.";
+    if (daysThisWeek >= 3) return "Boa sequência essa semana.";
+    return "Bom saber como você está hoje.";
+  }
+
+  if (!lastLogDate) return "Pronto para começar o seu acompanhamento.";
+
+  const daysSince = Math.floor(
+    (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
+  );
+
+  if (daysSince <= 1) return "Como está sendo esse dia?";
+  if (daysSince <= 4) return "Quando quiser, adoraríamos saber como você está.";
+  return "Sem pressão — estamos aqui quando fizer sentido.";
+}
+
 function formatDatePt(todayStr: string): string {
   const [yearStr, monthStr, dayStr] = todayStr.split("-");
   const date = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
@@ -108,52 +130,66 @@ export default async function DashboardPage() {
 
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
+  const heroContext = getHeroContext(data);
 
   return (
     <div className="space-y-5">
-      {/* Hero — saudação + data */}
-      <header className="pb-1">
+      {/* Hero — saudação + data + contexto emocional */}
+      <header className="pb-1 animate-in fade-in-0 slide-in-from-bottom-2 duration-200">
         <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
           {dateLabel}
         </p>
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           {firstName ? `Olá, ${firstName}` : "Olá"}
         </h1>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+          {heroContext}
+        </p>
       </header>
 
       {!data.hasMedications ? (
-        <OnboardingChecklist
-          hasMedications={false}
-          hasLoggedToday={data.todayLog !== null}
-          hasReminders={data.hasReminders}
-        />
+        <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
+          <OnboardingChecklist
+            hasMedications={false}
+            hasLoggedToday={data.todayLog !== null}
+            hasReminders={data.hasReminders}
+          />
+        </div>
       ) : (
         <>
-          <TodayCard todayLog={data.todayLog} />
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-75">
+            <TodayCard todayLog={data.todayLog} />
+          </div>
 
-          <InsightsStrip
-            daysThisWeek={data.daysThisWeek}
-            activeMedicationsCount={data.activeMedicationsCount}
-            activeRemindersCount={data.activeRemindersCount}
-          />
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-150">
+            <InsightsStrip
+              daysThisWeek={data.daysThisWeek}
+              activeMedicationsCount={data.activeMedicationsCount}
+              activeRemindersCount={data.activeRemindersCount}
+            />
+          </div>
 
-          <GuidanceCard
-            hasMedications={data.hasMedications}
-            hasReminders={data.hasReminders}
-            hasLoggedThisWeek={data.hasLoggedThisWeek}
-          />
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-225">
+            <GuidanceCard
+              hasMedications={data.hasMedications}
+              hasReminders={data.hasReminders}
+              hasLoggedThisWeek={data.hasLoggedThisWeek}
+            />
+          </div>
 
-          <RecentActivity
-            lastLogDate={data.lastLogDate}
-            todayStr={data.todayStr}
-          />
+          <div className="animate-in fade-in-0 slide-in-from-bottom-2 duration-200 anim-delay-300">
+            <RecentActivity
+              lastLogDate={data.lastLogDate}
+              todayStr={data.todayStr}
+            />
+          </div>
         </>
       )}
 
       {/* Link para perfil */}
       <Link
         href="/profile"
-        className="flex items-center justify-between rounded-2xl bg-card px-5 py-4 transition-all duration-200 hover:shadow-card active:scale-[0.99]"
+        className="flex items-center justify-between rounded-2xl bg-card px-5 py-4 transition-all duration-200 hover:shadow-card active:scale-[0.99] animate-in fade-in-0 slide-in-from-bottom-2 anim-delay-300"
         style={{ border: "1px solid oklch(0.928 0.010 85)" }}
         aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
       >
