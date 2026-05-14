@@ -406,6 +406,24 @@ html[data-presence="sparse"] {
   --muted-foreground: oklch(0.488 0.018 258);
 }
 
+/* ─── Journey state — profundidade histórica da jornada ────── */
+html[data-journey="beginning"] {
+  --ambient-glow: oklch(0.540 0.128 277 / 0.03);
+}
+
+html[data-journey="building"] {
+  --ambient-glow: oklch(0.540 0.128 277 / 0.055);
+}
+
+html[data-journey="established"] {
+  --ambient-glow: oklch(0.540 0.128 277 / 0.07);
+}
+
+html[data-journey="returning-deep"] {
+  --ambient-glow:     oklch(0.540 0.128 277 / 0.04);
+  --muted-foreground: oklch(0.490 0.018 258);
+}
+
 /* ─── Premium details — scrollbar, selection, mask ────────── */
 ::-webkit-scrollbar       { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -426,6 +444,10 @@ html[data-presence="sparse"] {
 
 @utility duration-500 {
   animation-duration: 500ms;
+}
+
+@utility duration-600 {
+  animation-duration: 600ms;
 }
 
 /* gradient mask — fade horizontal suave em containers com overflow */

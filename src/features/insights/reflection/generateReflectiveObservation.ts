@@ -16,7 +16,9 @@ export function generateReflectiveObservation(
     weightedWellbeing,
   } = input;
 
-  const seed = totalLogs + daysThisWeek;
+  // Semente baseada em "capítulos" — muda a cada ~7 registros, criando
+  // sensação de evolução contínua sem repetição rápida
+  const seed = Math.floor(totalLogs / 7) * 3 + daysThisWeek;
 
   if (weightedStrain != null && weightedStrain >= 6.5) {
     return {

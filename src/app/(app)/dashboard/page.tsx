@@ -13,7 +13,14 @@ import { getLongitudinalSignals } from "@/features/insights/utils/getLongitudina
 import { MemoryEcho } from "@/features/dashboard/components/MemoryEcho";
 import { shouldSurfaceReflection } from "@/features/insights/reflection/shouldSurfaceReflection";
 import { generateReflectiveObservation } from "@/features/insights/reflection/generateReflectiveObservation";
-import { shouldSurfaceDiscovery, getDiscovery } from "@/features/insights/reflection/getDiscovery";
+import {
+  shouldSurfaceDiscovery,
+  getDiscovery,
+  shouldSurfaceSlowDiscovery,
+  getSlowDiscovery,
+} from "@/features/insights/reflection/getDiscovery";
+import { detectTemporalPatterns } from "@/features/insights/temporal/detectTemporalPatterns";
+import { MemoryThread } from "@/features/dashboard/components/MemoryThread";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -197,29 +204,42 @@ export default async function DashboardPage() {
     totalLogs: data.totalLogsProxy,
   });
 
-  // Hierarquia de eco: discovery (raro) → reflection (condicional) → longitudinal
-  let echoNarrative: string | null = null;
+  // Hierarquia de eco com rarity: slow discovery → temporal pattern →
+  // discovery → reflection → longitudinal narrative
+  // isTemporalEcho = true → MemoryThread (mais sutil); false → MemoryEcho
+  type EchoResult = { narrative: string; isTemporal: boolean } | null;
+  let echo: EchoResult = null;
+
   if (mode !== "onboarding") {
-    if (shouldSurfaceDiscovery({
-      totalLogs: data.totalLogsProxy,
-      daysThisWeek: data.daysThisWeek,
-      longitudinalState: longitudinalSignals.state,
-    })) {
-      echoNarrative = getDiscovery(data.totalLogsProxy);
-    } else if (shouldSurfaceReflection({
-      totalLogs: data.totalLogsProxy,
-      daysThisWeek: data.daysThisWeek,
-      longitudinalState: longitudinalSignals.state,
-      daysSinceLastLog: data.daysSinceLastLog,
-    })) {
-      echoNarrative = generateReflectiveObservation({
-        longitudinalState: longitudinalSignals.state,
-        daysThisWeek: data.daysThisWeek,
-        totalLogs: data.totalLogsProxy,
-        daysSinceLastLog: data.daysSinceLastLog,
-      }).reflection;
+    const total = data.totalLogsProxy;
+    const state = longitudinalSignals.state;
+
+    if (shouldSurfaceSlowDiscovery({ totalLogs: total, daysThisWeek: data.daysThisWeek, longitudinalState: state })) {
+      echo = { narrative: getSlowDiscovery(total), isTemporal: true };
     } else {
-      echoNarrative = longitudinalSignals.narrative;
+      const temporalPattern = detectTemporalPatterns({
+        totalLogs: total,
+        daysThisWeek: data.daysThisWeek,
+        daysSinceLastLog: data.daysSinceLastLog,
+        longitudinalState: state,
+      });
+      if (temporalPattern.thread) {
+        echo = { narrative: temporalPattern.thread, isTemporal: true };
+      } else if (shouldSurfaceDiscovery({ totalLogs: total, daysThisWeek: data.daysThisWeek, longitudinalState: state })) {
+        echo = { narrative: getDiscovery(total), isTemporal: false };
+      } else if (shouldSurfaceReflection({ totalLogs: total, daysThisWeek: data.daysThisWeek, longitudinalState: state, daysSinceLastLog: data.daysSinceLastLog })) {
+        echo = {
+          narrative: generateReflectiveObservation({
+            longitudinalState: state,
+            daysThisWeek: data.daysThisWeek,
+            totalLogs: total,
+            daysSinceLastLog: data.daysSinceLastLog,
+          }).reflection,
+          isTemporal: false,
+        };
+      } else if (longitudinalSignals.narrative) {
+        echo = { narrative: longitudinalSignals.narrative, isTemporal: false };
+      }
     }
   }
 
@@ -236,9 +256,11 @@ export default async function DashboardPage() {
         quietInsight={quietInsight}
       />
 
-      {/* ── Eco longitudinal — memória silenciosa ─────────── */}
-      {echoNarrative && (
-        <MemoryEcho narrative={echoNarrative} />
+      {/* ── Eco — hierarquia: temporal (MemoryThread) ou recente (MemoryEcho) */}
+      {echo && (
+        echo.isTemporal
+          ? <MemoryThread narrative={echo.narrative} />
+          : <MemoryEcho narrative={echo.narrative} />
       )}
 
       {/* ── Onboarding ────────────────────────────────────── */}

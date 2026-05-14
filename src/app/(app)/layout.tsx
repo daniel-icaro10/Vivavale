@@ -1,11 +1,19 @@
 import { createServerClient } from "@/lib/supabase/server";
 import { AppShell } from "@/components/shared/layout/AppShell";
-import type { UserPresence } from "@/features/dashboard/components/AtmosphereProvider";
+import type {
+  UserPresence,
+  JourneyState,
+} from "@/features/dashboard/components/AtmosphereProvider";
 
-async function getUserPresence(): Promise<UserPresence> {
+interface LayoutSignals {
+  presence: UserPresence;
+  journey: JourneyState | undefined;
+}
+
+async function getLayoutSignals(): Promise<LayoutSignals> {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return "steady";
+  if (!user) return { presence: "steady", journey: undefined };
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
@@ -18,8 +26,11 @@ async function getUserPresence(): Promise<UserPresence> {
     .order("date", { ascending: false })
     .limit(10);
 
-  if (!logs || logs.length === 0) return "sparse";
+  if (!logs || logs.length === 0) {
+    return { presence: "sparse", journey: "beginning" };
+  }
 
+  const totalLogsProxy = logs.length;
   const lastDate = logs[0].date;
   const todayStr = new Date().toLocaleDateString("sv-SE");
   const daysSinceLast = Math.floor(
@@ -27,13 +38,28 @@ async function getUserPresence(): Promise<UserPresence> {
   );
   const daysThisWeek = logs.filter((l) => l.date >= sevenDaysAgoStr).length;
 
-  if (daysSinceLast >= 7) return "returning";
-  if (daysThisWeek >= 5) return "consistent";
-  if (daysThisWeek >= 2) return "steady";
-  return "sparse";
+  // Presença comportamental
+  let presence: UserPresence = "sparse";
+  if (daysSinceLast >= 7)   presence = "returning";
+  else if (daysThisWeek >= 5) presence = "consistent";
+  else if (daysThisWeek >= 2) presence = "steady";
+
+  // Estado da jornada — profundidade histórica
+  let journey: JourneyState | undefined;
+  if (daysSinceLast >= 14) {
+    journey = "returning-deep";
+  } else if (totalLogsProxy >= 10) {
+    journey = "established";
+  } else if (totalLogsProxy >= 5) {
+    journey = "building";
+  } else {
+    journey = "beginning";
+  }
+
+  return { presence, journey };
 }
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const presence = await getUserPresence();
-  return <AppShell presence={presence}>{children}</AppShell>;
+  const { presence, journey } = await getLayoutSignals();
+  return <AppShell presence={presence} journey={journey}>{children}</AppShell>;
 }

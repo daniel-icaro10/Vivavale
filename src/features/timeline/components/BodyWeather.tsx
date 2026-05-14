@@ -12,17 +12,37 @@ function computeBodyWeather(insights: WeeklyInsights): BodyWeatherData {
   const strain    = ((insights.avgPain ?? 5) + (insights.avgFatigue ?? 5)) / 2;
   const balance   = wellbeing - strain;
 
-  if (balance >= 3 && strain <= 3) {
+  // Muito leve — alta harmonia, baixo desgaste
+  if (balance >= 3.5 && strain <= 2.5) {
+    return { label: "Semana muito leve", hue: 145, chroma: 0.08, lightness: 0.80 };
+  }
+  // Leve — boa harmonia
+  if (balance >= 2.5 && strain <= 3.5) {
     return { label: "Semana mais leve", hue: 155, chroma: 0.07, lightness: 0.78 };
   }
-  if (strain >= 6.5) {
-    return { label: "Corpo mais exigido", hue: 25, chroma: 0.05, lightness: 0.72 };
+  // Enraizado — equilíbrio presente, algum desgaste
+  if (balance >= 1 && wellbeing >= 5.5 && strain <= 4.5) {
+    return { label: "Semana mais enraizada", hue: 175, chroma: 0.055, lightness: 0.77 };
   }
-  if (balance < -1.5) {
+  // Estável — ritmo regular
+  if (wellbeing >= 5 && strain <= 5 && Math.abs(balance) < 1.5) {
+    return { label: "Ritmo mais estável", hue: 200, chroma: 0.05, lightness: 0.76 };
+  }
+  // Moderado — algum desgaste, equilíbrio parcial
+  if (strain >= 4 && strain < 5.5 && Math.abs(balance) < 1) {
+    return { label: "Semana com equilíbrio moderado", hue: 220, chroma: 0.042, lightness: 0.75 };
+  }
+  // Oscilante — desequilíbrio presente
+  if (balance < -1.5 && strain < 6.5) {
     return { label: "Oscilações presentes", hue: 255, chroma: 0.045, lightness: 0.74 };
   }
-  if (wellbeing >= 5.5 && strain <= 5) {
-    return { label: "Ritmo mais estável", hue: 200, chroma: 0.05, lightness: 0.76 };
+  // Exigido — desgaste alto
+  if (strain >= 6.5 && strain < 7.5) {
+    return { label: "Corpo mais exigido", hue: 25, chroma: 0.05, lightness: 0.72 };
+  }
+  // Muito exigido — desgaste muito alto
+  if (strain >= 7.5) {
+    return { label: "Semana de muito esforço", hue: 15, chroma: 0.06, lightness: 0.70 };
   }
   return { label: "Semana com suas variações", hue: 180, chroma: 0.04, lightness: 0.77 };
 }

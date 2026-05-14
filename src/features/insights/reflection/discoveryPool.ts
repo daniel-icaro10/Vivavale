@@ -5,3 +5,11 @@ export const DISCOVERY_POOL: string[] = [
   "Mesmo entradas espaçadas ajudam a perceber continuidades.",
   "Alguns dias com variações diferentes acabaram se encontrando.",
 ];
+
+export const SLOW_DISCOVERY_POOL: string[] = [
+  "Certos momentos continuam retornando em ritmos diferentes.",
+  "Mesmo semanas distantes parecem carregar ecos parecidos.",
+  "Alguns padrões ficaram mais claros com o passar do tempo.",
+  "Os registros, vistos juntos, começam a revelar algo mais amplo.",
+  "Há continuidades aparecendo entre semanas que pareciam distintas.",
+];
