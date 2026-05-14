@@ -20,12 +20,12 @@ export const env = {
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
 
   // IA narrativa — opcional. Se AI_NARRATIVES_ENABLED != "true", o sistema usa
-  // fallback determinístico e OPENAI_API_KEY não é carregada.
+  // fallback determinístico e ANTHROPIC_API_KEY não é carregada.
   aiEnabled: process.env.AI_NARRATIVES_ENABLED === "true",
   // Nunca exposto ao cliente. Apenas server-side.
-  openaiApiKey: process.env.OPENAI_API_KEY ?? null,
-  // Modelo primário e fallback dentro da tier OpenAI.
-  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4o-mini",
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? null,
+  // Modelo Claude — padrão: haiku (rápido e barato para narrativas curtas).
+  anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-haiku-4-5-20251001",
 
   // Service role key — nunca exposta ao cliente. Apenas server-side para admin ops.
   serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? null,

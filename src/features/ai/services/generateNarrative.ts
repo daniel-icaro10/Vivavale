@@ -1,4 +1,4 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 import { env } from "@/lib/env";
 import type { NarrativeContext, NarrativeResult, NarrativeType } from "../types/narrative";
 import { NARRATIVE_SYSTEM_PROMPT } from "../prompts/narrative-system";
@@ -38,13 +38,13 @@ function contextHash(ctx: NarrativeContext, type: NarrativeType): string {
   })}`;
 }
 
-let openaiClient: OpenAI | null = null;
+let anthropicClient: Anthropic | null = null;
 
-function getClient(): OpenAI {
-  if (!openaiClient) {
-    openaiClient = new OpenAI({ apiKey: env.openaiApiKey ?? "" });
+function getClient(): Anthropic {
+  if (!anthropicClient) {
+    anthropicClient = new Anthropic({ apiKey: env.anthropicApiKey ?? "" });
   }
-  return openaiClient;
+  return anthropicClient;
 }
 
 function buildUserPrompt(ctx: NarrativeContext, type: NarrativeType): string {
@@ -60,7 +60,7 @@ export async function generateNarrative(
   initTelemetry();
 
   // Feature flag: se desabilitado, fallback determinístico sem chamada de IA.
-  if (!env.aiEnabled || !env.openaiApiKey) {
+  if (!env.aiEnabled || !env.anthropicApiKey) {
     return { text: fallbackNarrative(ctx, type), isAI: false };
   }
 
@@ -74,7 +74,7 @@ export async function generateNarrative(
   }
 
   trackEvent(makeCacheMiss(SESSION_ID, type));
-  trackEvent(makeGenerationStarted(SESSION_ID, type, env.openaiModel));
+  trackEvent(makeGenerationStarted(SESSION_ID, type, env.anthropicModel));
 
   const start = Date.now();
 
@@ -85,20 +85,20 @@ export async function generateNarrative(
     let raw: string;
 
     try {
-      const response = await getClient().chat.completions.create(
+      const response = await getClient().messages.create(
         {
-          model: env.openaiModel,
+          model: env.anthropicModel,
           temperature: 0.3,
           max_tokens: 300,
-          response_format: { type: "json_object" },
+          system: NARRATIVE_SYSTEM_PROMPT,
           messages: [
-            { role: "system", content: NARRATIVE_SYSTEM_PROMPT },
             { role: "user", content: buildUserPrompt(ctx, type) },
           ],
         },
         { signal: controller.signal },
       );
-      raw = response.choices[0]?.message?.content ?? "";
+      const block = response.content[0];
+      raw = block.type === "text" ? block.text : "";
     } finally {
       clearTimeout(timeoutId);
     }
@@ -130,7 +130,7 @@ export async function generateNarrative(
         trackEvent(makeParserRecovered(SESSION_ID, type, aiCount));
         trackEvent(makeFallbackTriggered(SESSION_ID, type, "parser_failure", false));
         trackEvent(
-          makeGenerationCompleted(SESSION_ID, type, env.openaiModel, latencyMs, aiCount, fbCount),
+          makeGenerationCompleted(SESSION_ID, type, env.anthropicModel, latencyMs, aiCount, fbCount),
         );
       }
     }
@@ -142,7 +142,7 @@ export async function generateNarrative(
 
     if (!hadParseFailure && !hadPartialFallback) {
       trackEvent(
-        makeGenerationCompleted(SESSION_ID, type, env.openaiModel, latencyMs, 4, 0),
+        makeGenerationCompleted(SESSION_ID, type, env.anthropicModel, latencyMs, 4, 0),
       );
     }
 
