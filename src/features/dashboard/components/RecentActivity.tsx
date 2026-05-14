@@ -24,9 +24,8 @@ export function RecentActivity({ lastLogDate, todayStr }: RecentActivityProps) {
   const relative = relativeDatePt(lastLogDate, todayStr);
 
   return (
-    <p className="px-1 text-xs text-muted-foreground">
-      Último registro:{" "}
-      <span className="text-foreground">{relative}</span>
+    <p className="px-1 text-[11px] text-muted-foreground/40">
+      {relative === "ontem" ? "Registrou ontem." : `Registrou ${relative}.`}
     </p>
   );
 }

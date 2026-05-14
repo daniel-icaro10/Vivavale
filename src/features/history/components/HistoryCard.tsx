@@ -11,7 +11,6 @@ const SYMPTOMS = [
 ] as const;
 
 function formatCardDate(dateStr: string): { weekday: string; date: string } {
-  // Usa números para evitar comportamento UTC do parsing de string ISO
   const [yearStr, monthStr, dayStr] = dateStr.split("-");
   const d = new Date(Number(yearStr), Number(monthStr) - 1, Number(dayStr));
   return {
@@ -28,33 +27,28 @@ export function HistoryCard({ log }: HistoryCardProps) {
   const { weekday, date } = formatCardDate(log.date);
 
   return (
-    <article
-      aria-label={`${weekday}, ${date}`}
-      className="rounded-xl border border-border bg-card px-4 py-4"
-    >
-      {/* Data como âncora visual principal */}
-      <time dateTime={log.date} className="flex items-baseline gap-2">
-        <span className="text-xs font-medium text-muted-foreground">
-          {weekday}
-        </span>
-        <span className="text-base font-semibold text-foreground">{date}</span>
+    <article aria-label={`${weekday}, ${date}`} className="py-4">
+      <time dateTime={log.date} className="flex items-baseline gap-2.5 mb-2.5">
+        <span className="vl-eyebrow capitalize">{weekday}</span>
+        <span className="text-[13px] font-semibold text-foreground/85">{date}</span>
       </time>
 
-      {/* Sintomas — secundários, discretos */}
-      <dl className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
+      <dl className="flex flex-wrap gap-x-4 gap-y-1">
         {SYMPTOMS.map(({ key, label }) => (
           <div key={key} className="flex items-baseline gap-1">
-            <dt className="text-[11px] text-muted-foreground">{label}</dt>
-            <dd className="text-xs font-semibold tabular-nums text-foreground/80">
+            <dt className="text-[10px] text-muted-foreground/50">{label}</dt>
+            <dd className="text-[12px] tabular-nums font-medium text-foreground/65">
               {log[key]}
             </dd>
           </div>
         ))}
       </dl>
 
-      {/* Anotação — terciária, tom de memória pessoal */}
       {log.notes && (
-        <p className="mt-3 line-clamp-2 text-xs italic leading-relaxed text-muted-foreground">
+        <p
+          className="mt-3 text-[13px] leading-relaxed text-muted-foreground/70 italic pl-4"
+          style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.12)" }}
+        >
           {log.notes}
         </p>
       )}

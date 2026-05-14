@@ -5,11 +5,11 @@ interface MonthHeaderProps {
 
 export function MonthHeader({ id, label }: MonthHeaderProps) {
   return (
-    <h2
-      id={id}
-      className="mb-4 border-b border-border pb-2 text-sm font-semibold text-foreground/70"
-    >
-      {label}
-    </h2>
+    <div className="mb-5 flex items-center gap-4" aria-labelledby={id}>
+      <p id={id} className="vl-eyebrow shrink-0">
+        {label}
+      </p>
+      <div className="h-px flex-1 bg-border/50" aria-hidden="true" />
+    </div>
   );
 }

@@ -13,7 +13,7 @@ export function HistoryList({ groups, totalLogs }: HistoryListProps) {
       {groups.map((group) => (
         <section key={group.key} aria-labelledby={`month-${group.key}`}>
           <MonthHeader id={`month-${group.key}`} label={group.label} />
-          <div className="space-y-3">
+          <div className="divide-y divide-border/30">
             {group.logs.map((log) => (
               <HistoryCard key={log.id} log={log} />
             ))}
@@ -21,18 +21,10 @@ export function HistoryList({ groups, totalLogs }: HistoryListProps) {
         </section>
       ))}
 
-      {/* Placeholder visual — será conectado a paginação real futuramente */}
       {totalLogs >= 30 && (
-        <div className="pt-2 text-center">
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="rounded-lg border border-border px-6 py-2.5 text-sm text-muted-foreground opacity-50"
-          >
-            Ver registros anteriores
-          </button>
-        </div>
+        <p className="pt-2 text-center vl-metric">
+          Mostrando os últimos 30 registros.
+        </p>
       )}
     </div>
   );

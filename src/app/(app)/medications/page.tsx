@@ -33,7 +33,7 @@ export default async function MedicationsPage() {
     <>
       <PageHeader
         title="Remédios"
-        description="Seus medicamentos em um só lugar"
+        description="Medicamentos ativos"
       />
       <MedicationList medications={medications} />
     </>

@@ -181,7 +181,7 @@ export default async function DashboardPage() {
   }).phrase;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7">
       {/* Hero — contextual + atmosphere-aware (client) */}
       <AtmosphereHero
         contextMessage={contextMessage}
@@ -288,22 +288,27 @@ export default async function DashboardPage() {
       )}
 
       {/* Perfil */}
-      <Link
-        href="/profile"
-        className={`flex items-center justify-between rounded-2xl bg-card px-5 py-4 float-hover active:scale-[0.985] animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-375`}
-        style={{ border: "1px solid oklch(0.940 0.007 85)" }}
-        aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
-      >
-        <div>
-          <p className="text-sm font-semibold text-foreground">Perfil</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {data.profile?.name ?? "Suas informações"}
-          </p>
-        </div>
-        <span className="text-xl leading-none text-muted-foreground/40" aria-hidden="true">
-          ›
-        </span>
-      </Link>
+      <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-375`}>
+        <div className="h-px bg-border/40 mb-5" aria-hidden="true" />
+        <Link
+          href="/profile"
+          className="group flex items-center justify-between px-1 py-2 active:opacity-60 transition-opacity"
+          aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
+        >
+          <div>
+            <p className="vl-eyebrow mb-0.5">Perfil</p>
+            <p className="text-sm text-foreground/65 group-hover:text-foreground/90 transition-colors">
+              {data.profile?.name ?? "Suas informações"}
+            </p>
+          </div>
+          <span
+            className="text-muted-foreground/25 group-hover:text-muted-foreground/60 transition-colors text-sm"
+            aria-hidden="true"
+          >
+            ›
+          </span>
+        </Link>
+      </div>
     </div>
   );
 }

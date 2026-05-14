@@ -3,26 +3,13 @@ import type { CorrelationInsight } from "@/features/insights/types/insights";
 export function CorrelationCard({ correlation }: { correlation: CorrelationInsight }) {
   return (
     <div
-      className="rounded-xl bg-card px-4 py-4 shadow-xs"
-      style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+      className="py-2 pl-4"
+      style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.12)" }}
     >
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-semibold text-foreground leading-snug">
-          {correlation.label}
-        </p>
-        {correlation.strength === "strong" && (
-          <span
-            className="mt-0.5 shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-semibold"
-            style={{
-              background: "oklch(0.545 0.155 277 / 0.10)",
-              color: "oklch(0.545 0.155 277)",
-            }}
-          >
-            Padrão frequente
-          </span>
-        )}
-      </div>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+      <p className="text-[14px] font-medium leading-relaxed text-foreground/80">
+        {correlation.label}
+      </p>
+      <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground/70">
         {correlation.body}
       </p>
     </div>
