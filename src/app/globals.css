@@ -117,10 +117,12 @@
 /* ─── Depth system (Oura feeling) ───────────────────────── */
 @utility surface-2        { background-color: oklch(0.978 0.006 85); }
 @utility surface-3        { background-color: oklch(0.970 0.010 80); }
-/* Surfaces ambientais — depth por contraste, não por outline */
-@utility surface-soft     { background-color: oklch(0.986 0.004 84); }
-@utility surface-elevated { background-color: oklch(1 0 0); }
-@utility surface-journal  { background-color: oklch(0.981 0.006 82); }
+/* Depth System 2.0 — depth por temperatura, não por sombra */
+@utility surface-flat     { background-color: oklch(0.982 0.006 85); }  /* fundo */
+@utility surface-soft     { background-color: oklch(0.986 0.004 84); }  /* quase fundo */
+@utility surface-ambient  { background-color: oklch(0.975 0.008 83); }  /* camada intermediária */
+@utility surface-elevated { background-color: oklch(1 0 0); }           /* card branco */
+@utility surface-journal  { background-color: oklch(0.982 0.009 82); }  /* narrativa — quente */
 
 /* ─── Reading width — conforto de leitura ───────────────── */
 @utility max-w-reading { max-width: 65ch; }
@@ -302,6 +304,17 @@
       transition: none;
     }
   }
+}
+
+/* ─── Motion Continuity System — timing centralizado ─────
+   Referência única para durations e easings em todo o app.  */
+:root {
+  --duration-enter:       200ms;
+  --duration-ambient:     300ms;
+  --duration-fast:        150ms;
+  --duration-transition:  180ms;
+  --ease-out:  cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-calm: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ─── Temporal atmosphere — resposta sutil ao horário (via AtmosphereProvider) ──

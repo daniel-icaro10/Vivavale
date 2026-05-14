@@ -40,78 +40,64 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="Perfil" description="Suas informações pessoais" />
+      <PageHeader title="Perfil" />
 
-      <div className="space-y-8">
+      <div className="space-y-10">
+        {/* Informações pessoais */}
         {data?.profile ? (
-          <ProfileForm
-            name={data.profile.name}
-            timezone={data.profile.timezone}
-          />
+          <section aria-label="Informações pessoais">
+            <p className="vl-eyebrow mb-4">Sobre você</p>
+            <ProfileForm
+              name={data.profile.name}
+              timezone={data.profile.timezone}
+            />
+          </section>
         ) : (
-          <div className="rounded-xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Não foi possível carregar o perfil.
-          </div>
+          </p>
         )}
 
-        {/* Notificações */}
-        <section
-          className="space-y-5 rounded-xl border border-border bg-card px-5 py-5"
-          aria-labelledby="notifications-heading"
-        >
+        <div className="h-px bg-border/50" />
+
+        {/* Lembretes */}
+        <section aria-labelledby="notifications-heading" className="space-y-5">
           <div>
-            <h2
-              id="notifications-heading"
-              className="text-base font-semibold text-foreground"
-            >
-              Notificações
-            </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Configure como e quando receber seus lembretes.
+            <p className="vl-eyebrow mb-1" id="notifications-heading">
+              Lembretes
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground/75">
+              Configure quando quer ser lembrado de registrar.
             </p>
           </div>
-
-          <div className="border-t border-border pt-4">
-            <PushToggle />
-          </div>
-
-          <div className="border-t border-border pt-4">
-            <p className="mb-4 text-sm font-medium text-foreground">
-              Preferências de envio
-            </p>
-            <NotificationPreferencesForm
-              reminders_enabled={data?.notifPrefs?.reminders_enabled ?? true}
-              quiet_hours_start={data?.notifPrefs?.quiet_hours_start ?? null}
-              quiet_hours_end={data?.notifPrefs?.quiet_hours_end ?? null}
-            />
-          </div>
+          <PushToggle />
+          <div className="h-px bg-border/40" />
+          <NotificationPreferencesForm
+            reminders_enabled={data?.notifPrefs?.reminders_enabled ?? true}
+            quiet_hours_start={data?.notifPrefs?.quiet_hours_start ?? null}
+            quiet_hours_end={data?.notifPrefs?.quiet_hours_end ?? null}
+          />
         </section>
+
+        <div className="h-px bg-border/50" />
 
         {/* Dados pessoais — LGPD */}
-        <section
-          className="space-y-3 rounded-xl border border-border bg-card px-5 py-5"
-          aria-labelledby="data-heading"
-        >
+        <section aria-labelledby="data-heading" className="space-y-5">
           <div>
-            <h2
-              id="data-heading"
-              className="text-base font-semibold text-foreground"
-            >
+            <p className="vl-eyebrow mb-1" id="data-heading">
               Seus dados
-            </h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">
-              Você pode exportar ou excluir todos os seus dados a qualquer momento.
+            </p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground/75">
+              Tudo que você registrou pertence a você.
             </p>
           </div>
-          <div className="border-t border-border pt-4 space-y-4">
-            <ExportDataButton />
-            <DeleteAccountSection />
-          </div>
+          <ExportDataButton />
+          <DeleteAccountSection />
         </section>
 
-        <div className="border-t border-border pt-8">
-          <LogoutButton />
-        </div>
+        <div className="h-px bg-border/50" />
+
+        <LogoutButton />
       </div>
     </>
   );

@@ -8,17 +8,15 @@ interface ReflectionCardProps {
 export function ReflectionCard({ text, isAI }: ReflectionCardProps) {
   return (
     <div
-      className="rounded-2xl px-5 py-5"
-      style={{
-        background: "oklch(0.968 0.008 80)",
-        border: "1px dashed oklch(0.880 0.015 85)",
-      }}
+      className="rounded-2xl px-6 pt-5 pb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
+      style={{ background: "oklch(0.975 0.009 80)" }}
       role="note"
       aria-label="Reflexão sobre seus registros"
     >
-      <p className="text-[15px] leading-7 text-muted-foreground/80 max-w-reading">{text}</p>
+      <p className="mb-3 vl-eyebrow">Observação</p>
+      <p className="vl-narrative max-w-reading">{text}</p>
       {isAI && (
-        <div className="mt-3 flex justify-end">
+        <div className="mt-4 flex justify-end">
           <AIInsightBadge />
         </div>
       )}

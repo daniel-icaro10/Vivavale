@@ -73,9 +73,11 @@ export function TimelineClient({
 
   return (
     <div className="space-y-8">
-      {/* Narrativa semanal */}
+      {/* Narrativa semanal — full-bleed editorial */}
       {weeklyNarrative && (
-        <NarrativeCard text={weeklyNarrative.text} isAI={weeklyNarrative.isAI} />
+        <div className="-mx-5">
+          <NarrativeCard text={weeklyNarrative.text} isAI={weeklyNarrative.isAI} bleed />
+        </div>
       )}
 
       {/* Resumo da semana */}
