@@ -6,6 +6,7 @@ import { TodayCard } from "@/features/dashboard/components/TodayCard";
 import { InsightsStrip } from "@/features/dashboard/components/InsightsStrip";
 import { GuidanceCard } from "@/features/dashboard/components/GuidanceCard";
 import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
+import { AtmosphereHero } from "@/features/dashboard/components/AtmosphereHero";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -219,26 +220,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      {/* Hero — contextual */}
-      <header className={`pb-1 animate-in fade-in-0 slide-in-from-bottom-2 ${dur}`}>
-        <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
-          {dateLabel}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          {firstName ? `Olá, ${firstName}` : "Olá"}
-        </h1>
-        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-          {contextMessage}
-        </p>
-        {nextAction === "review_week" && (
-          <Link
-            href="/timeline"
-            className="mt-2 inline-block py-1 text-xs text-muted-foreground/55 hover:text-primary transition-colors"
-          >
-            Ver sua semana →
-          </Link>
-        )}
-      </header>
+      {/* Hero — contextual + atmosphere-aware (client) */}
+      <AtmosphereHero
+        contextMessage={contextMessage}
+        dur={dur}
+        dateLabel={dateLabel}
+        firstName={firstName}
+        nextAction={nextAction}
+        hasLoggedToday={data.todayLog !== null}
+      />
 
       {/* ── Onboarding ────────────────────────────────────── */}
       {mode === "onboarding" && (

@@ -72,13 +72,13 @@ export function TimelineClient({
   }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-8">
       {/* Narrativa semanal */}
       {weeklyNarrative && (
         <NarrativeCard text={weeklyNarrative.text} isAI={weeklyNarrative.isAI} />
       )}
 
-      {/* Resumo da semana — capítulo principal */}
+      {/* Resumo da semana */}
       {weeklyInsights && (
         <WeeklySummaryCard
           insights={weeklyInsights}
@@ -103,23 +103,14 @@ export function TimelineClient({
         />
       )}
 
-      {/* Separador visual antes da timeline dia-a-dia */}
+      {/* Timeline dia a dia — ritmo de leitura orgânico */}
       {dayGroups.length > 0 && (
-        <div className="flex items-center gap-3" aria-hidden="true">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/50">
-            Dias
-          </span>
-          <div className="h-px flex-1 bg-border" />
-        </div>
+        <section aria-label="Registros diários" className="space-y-10">
+          {dayGroups.map((group) => (
+            <TimelineDayGroup key={group.date} group={group} />
+          ))}
+        </section>
       )}
-
-      {/* Timeline dia a dia */}
-      <section aria-label="Registros diários" className="space-y-7">
-        {dayGroups.map((group) => (
-          <TimelineDayGroup key={group.date} group={group} />
-        ))}
-      </section>
 
       {/* Paginação */}
       {cursor && (
