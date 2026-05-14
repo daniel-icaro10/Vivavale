@@ -14,27 +14,27 @@ export function getEmptyStateTone({
 } = {}): EmptyStateTone {
   if (totalLogs === 0) {
     return {
-      title: "Um lugar só seu",
-      description: "Os primeiros registros ajudam a entender seus padrões.",
+      title: "Um espaço esperando continuidade",
+      description: "Os registros começam a formar contexto com o tempo.",
     };
   }
 
   if (daysSinceLastLog !== null && daysSinceLastLog >= 7) {
     return {
-      title: "Bem-vindo de volta",
-      description: "Tudo bem recomeçar no seu ritmo.",
+      title: "O ritmo tem o seu próprio tempo",
+      description: "Mesmo entradas espaçadas ajudam a perceber padrões.",
     };
   }
 
   if (currentWeekCount > 0 && currentWeekCount < 3) {
     return {
-      title: "Cada dia conta",
-      description: "Mesmo poucos registros já começam a mostrar sinais.",
+      title: "Os primeiros passos",
+      description: "Esse espaço guarda os momentos que você decide registrar.",
     };
   }
 
   return {
-    title: "A história começa no primeiro passo",
-    description: "Cada dia registrado vai aparecendo aqui, aos poucos formando o seu caminho.",
+    title: "A continuidade tem forma própria",
+    description: "Mesmo registros espaçados continuam fazendo parte do percurso.",
   };
 }

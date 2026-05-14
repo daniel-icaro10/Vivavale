@@ -29,9 +29,10 @@ function computeBodyWeather(insights: WeeklyInsights): BodyWeatherData {
 
 interface BodyWeatherProps {
   insights: WeeklyInsights;
+  heightPx?: number;
 }
 
-export function BodyWeather({ insights }: BodyWeatherProps) {
+export function BodyWeather({ insights, heightPx = 68 }: BodyWeatherProps) {
   const { label, hue, chroma, lightness } = computeBodyWeather(insights);
 
   const c1 = `oklch(${lightness} ${chroma} ${hue} / 0.38)`;
@@ -41,9 +42,9 @@ export function BodyWeather({ insights }: BodyWeatherProps) {
   return (
     <div className="space-y-2.5">
       <div
-        className="relative h-[68px] w-full overflow-hidden rounded-xl"
+        className="relative w-full overflow-hidden rounded-xl"
         aria-hidden="true"
-        style={{ background: "oklch(0.975 0.006 84)" }}
+        style={{ height: `${heightPx}px`, background: "oklch(0.975 0.006 84)" }}
       >
         <div
           className="absolute inset-0 vl-breathe"

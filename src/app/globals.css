@@ -419,6 +419,15 @@ html[data-presence="sparse"] {
   color: oklch(0.218 0.024 260);
 }
 
+/* ─── Animation duration extras — memory rhythm ────────────── */
+@utility duration-400 {
+  animation-duration: 400ms;
+}
+
+@utility duration-500 {
+  animation-duration: 500ms;
+}
+
 /* gradient mask — fade horizontal suave em containers com overflow */
 @utility mask-fade-x {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);

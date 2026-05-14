@@ -109,7 +109,7 @@ export function TimelineClient({
       {dayGroups.length > 0 && (
         <section aria-label="Registros diários" className="space-y-12">
           {dayGroups.map((group) => (
-            <TimelineDayGroup key={group.date} group={group} />
+            <TimelineDayGroup key={group.date} group={group} todayStr={todayStr} />
           ))}
         </section>
       )}

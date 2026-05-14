@@ -5,6 +5,7 @@ import type { WeeklyInsights } from "@/features/insights/types/insights";
 import type { DailyLog } from "@/types/app";
 import { MetricSparkline } from "./MetricSparkline";
 import { BodyWeather } from "./BodyWeather";
+import { getWeeklyClosing } from "@/features/insights/reflection/getWeeklyClosing";
 
 function formatWeekRange(start: string, end: string): string {
   const [, sm, sd] = start.split("-").map(Number);
@@ -51,20 +52,17 @@ interface WeeklySummaryCardProps {
 
 const TRENDS_PREVIEW = 2;
 
-function getWeekNarration(daysLogged: number, trendCount: number): string | null {
-  if (daysLogged === 0) return null;
-  if (daysLogged === 1) return "Esta semana ficou mais silenciosa.";
-  if (daysLogged === 2) return "Alguns momentos ficaram registrados esta semana.";
-  if (daysLogged >= 5) return trendCount >= 3
-    ? "Os registros desta semana revelam um ritmo próprio."
-    : "Uma semana com presença constante.";
-  if (daysLogged >= 3) return "Os registros começam a revelar um ritmo.";
-  return null;
+function getBodyWeatherHeight(avgPain: number | null, avgFatigue: number | null): number {
+  const strain = ((avgPain ?? 5) + (avgFatigue ?? 5)) / 2;
+  if (strain >= 6.5) return 80;
+  if (strain < 3) return 56;
+  return 68;
 }
 
 export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProps) {
   const [trendsExpanded, setTrendsExpanded] = useState(false);
-  const weekNarration = getWeekNarration(insights.daysLogged, insights.trends.length);
+  const weekClosing = getWeeklyClosing(insights);
+  const bodyWeatherHeight = getBodyWeatherHeight(insights.avgPain, insights.avgFatigue);
 
   const sorted = sparkLogs.slice().sort((a, b) => a.date.localeCompare(b.date));
   const sparkPain  = sorted.map((l) => ({ date: l.date.slice(5), value: l.pain_level }));
@@ -81,7 +79,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 duration-300"
     >
       {/* Body Weather — visualização abstrata do clima corporal da semana */}
-      <BodyWeather insights={insights} />
+      <BodyWeather insights={insights} heightPx={bodyWeatherHeight} />
 
       {/* Header — editorial */}
       <div>
@@ -126,14 +124,14 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
         </div>
       )}
 
-      {/* Eco narrativo da semana — memória, não análise */}
-      {weekNarration && (
+      {/* Fecho reflexivo — síntese silenciosa da semana */}
+      {weekClosing && (
         <p
           className="text-[12px] leading-relaxed text-muted-foreground/28"
           style={{ letterSpacing: "-0.002em" }}
           aria-hidden="true"
         >
-          {weekNarration}
+          {weekClosing}
         </p>
       )}
     </section>

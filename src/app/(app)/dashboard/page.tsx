@@ -11,6 +11,9 @@ import { getEmotionalPresence } from "@/features/dashboard/utils/getEmotionalPre
 import { getQuietInsight } from "@/features/dashboard/utils/getQuietInsight";
 import { getLongitudinalSignals } from "@/features/insights/utils/getLongitudinalSignals";
 import { MemoryEcho } from "@/features/dashboard/components/MemoryEcho";
+import { shouldSurfaceReflection } from "@/features/insights/reflection/shouldSurfaceReflection";
+import { generateReflectiveObservation } from "@/features/insights/reflection/generateReflectiveObservation";
+import { shouldSurfaceDiscovery, getDiscovery } from "@/features/insights/reflection/getDiscovery";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -194,6 +197,32 @@ export default async function DashboardPage() {
     totalLogs: data.totalLogsProxy,
   });
 
+  // Hierarquia de eco: discovery (raro) → reflection (condicional) → longitudinal
+  let echoNarrative: string | null = null;
+  if (mode !== "onboarding") {
+    if (shouldSurfaceDiscovery({
+      totalLogs: data.totalLogsProxy,
+      daysThisWeek: data.daysThisWeek,
+      longitudinalState: longitudinalSignals.state,
+    })) {
+      echoNarrative = getDiscovery(data.totalLogsProxy);
+    } else if (shouldSurfaceReflection({
+      totalLogs: data.totalLogsProxy,
+      daysThisWeek: data.daysThisWeek,
+      longitudinalState: longitudinalSignals.state,
+      daysSinceLastLog: data.daysSinceLastLog,
+    })) {
+      echoNarrative = generateReflectiveObservation({
+        longitudinalState: longitudinalSignals.state,
+        daysThisWeek: data.daysThisWeek,
+        totalLogs: data.totalLogsProxy,
+        daysSinceLastLog: data.daysSinceLastLog,
+      }).reflection;
+    } else {
+      echoNarrative = longitudinalSignals.narrative;
+    }
+  }
+
   return (
     <div className="space-y-7">
       {/* Hero — contextual + atmosphere-aware (client) */}
@@ -208,8 +237,8 @@ export default async function DashboardPage() {
       />
 
       {/* ── Eco longitudinal — memória silenciosa ─────────── */}
-      {mode !== "onboarding" && longitudinalSignals.narrative && (
-        <MemoryEcho narrative={longitudinalSignals.narrative} />
+      {echoNarrative && (
+        <MemoryEcho narrative={echoNarrative} />
       )}
 
       {/* ── Onboarding ────────────────────────────────────── */}

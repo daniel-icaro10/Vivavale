@@ -39,7 +39,13 @@ function MetricBar({
   );
 }
 
-export function TimelineEntryCard({ log }: { log: DailyLog }) {
+export function TimelineEntryCard({
+  log,
+  metricsOpacity = 1,
+}: {
+  log: DailyLog;
+  metricsOpacity?: number;
+}) {
   const noteLength = log.notes?.length ?? 0;
   const isLongNote = noteLength >= NOTE_DROPCAP_THRESHOLD;
   const isReflective = noteLength >= NOTE_REFLECTIVE_THRESHOLD;
@@ -76,7 +82,7 @@ export function TimelineEntryCard({ log }: { log: DailyLog }) {
           )}
         </div>
       )}
-      <div className="space-y-2">
+      <div className="space-y-2" style={{ opacity: metricsOpacity }}>
         <MetricBar label="Dor"       value={log.pain_level} />
         <MetricBar label="Fadiga"    value={log.fatigue_level} />
         <MetricBar label="Sono"      value={log.sleep_quality} />
