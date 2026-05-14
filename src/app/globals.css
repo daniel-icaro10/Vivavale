@@ -187,7 +187,7 @@
       oklch(0.960 0.008 80) 100%
     );
     background-size: 200% 100%;
-    animation: vl-shimmer 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: vl-shimmer 3.2s ease-in-out infinite;
   }
   @media (prefers-reduced-motion: reduce) {
     .vl-shimmer {
@@ -321,20 +321,26 @@
 /* ─── Temporal atmosphere — resposta sutil ao horário (via AtmosphereProvider) ──
    Mudanças intencionalmente mínimas — quase subconscientes.                      */
 html[data-atmosphere="morning"] {
-  --background: oklch(0.984 0.009 88);
+  --background:       oklch(0.987 0.011 88);
+  --muted-foreground: oklch(0.470 0.020 258);
+  --shadow-card:      0 1px 4px oklch(0 0 0 / 0.07), 0 1px 2px oklch(0 0 0 / 0.04);
 }
 
 html[data-atmosphere="evening"] {
+  --background:   oklch(0.980 0.007 84);
   --shadow-card:  0 1px 3px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
   --shadow-hover: 0 4px 12px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.04);
 }
 
 html[data-atmosphere="night"] {
-  --background:       oklch(0.978 0.004 78);
-  --primary:          oklch(0.520 0.110 277);
-  --muted-foreground: oklch(0.500 0.018 255);
-  --border:           oklch(0.945 0.005 80);
-  --input:            oklch(0.945 0.005 80);
+  --background:       oklch(0.977 0.004 78);
+  --card:             oklch(0.998 0.002 78);
+  --primary:          oklch(0.515 0.105 277);
+  --muted-foreground: oklch(0.505 0.016 255);
+  --border:           oklch(0.946 0.004 80);
+  --input:            oklch(0.946 0.004 80);
+  --ring:             oklch(0.515 0.105 277);
+  --shadow-card:      0 1px 2px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
 }
 
 @layer base {

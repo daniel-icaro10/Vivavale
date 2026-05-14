@@ -19,8 +19,8 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card/96 backdrop-blur border-t border-border/60 pb-[env(safe-area-inset-bottom)]"
-      style={{ boxShadow: "0 -1px 0 oklch(0 0 0 / 0.03), 0 -4px 20px oklch(0 0 0 / 0.04)" }}
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card/96 backdrop-blur border-t border-border/40 pb-[env(safe-area-inset-bottom)]"
+      style={{ boxShadow: "0 -1px 0 oklch(0 0 0 / 0.02), 0 -4px 20px oklch(0 0 0 / 0.03)" }}
     >
       <ul className="flex items-stretch max-w-lg mx-auto">
         {navItems.map(({ href, label, icon: Icon }) => {
@@ -32,23 +32,24 @@ export function BottomNav() {
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] tracking-wide transition-colors duration-150",
+                  "relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] tracking-wide transition-colors duration-200",
                   "min-h-[64px] touch-manipulation",
                   isActive
                     ? "text-primary font-semibold"
-                    : "text-muted-foreground/60 font-medium hover:text-muted-foreground",
+                    : "text-muted-foreground/55 font-medium hover:text-muted-foreground",
                 )}
               >
-                {/* Indicador ativo: pequeno traço premium acima do ícone */}
-                {isActive && (
-                  <span
-                    aria-hidden="true"
-                    className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-5 rounded-full bg-primary/80"
-                  />
-                )}
+                {/* Indicador ativo — transição suave de largura */}
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute top-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full bg-primary/75 transition-all duration-300 ease-out",
+                    isActive ? "w-5 opacity-100" : "w-0 opacity-0",
+                  )}
+                />
                 <span
                   className={cn(
-                    "flex items-center justify-center transition-all duration-200 ease-out",
+                    "flex items-center justify-center transition-transform duration-200 ease-out",
                     isActive && "-translate-y-px",
                   )}
                 >
@@ -58,7 +59,7 @@ export function BottomNav() {
                     aria-hidden="true"
                   />
                 </span>
-                <span className={cn("transition-colors duration-150", !isActive && "opacity-60")}>
+                <span className={cn("transition-colors duration-200", !isActive && "opacity-55")}>
                   {label}
                 </span>
               </Link>

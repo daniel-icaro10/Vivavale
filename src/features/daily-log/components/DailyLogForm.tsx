@@ -49,11 +49,11 @@ function SliderField({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <label htmlFor={fieldKey} className="text-sm font-medium text-foreground">
+        <label htmlFor={fieldKey} className="text-sm text-foreground/70">
           {label}
         </label>
         <span
-          className="min-w-[2rem] text-right text-base font-semibold tabular-nums text-primary"
+          className="min-w-[2rem] text-right text-[15px] font-semibold tabular-nums text-foreground/60"
           aria-hidden="true"
         >
           {value}
