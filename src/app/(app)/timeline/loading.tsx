@@ -13,7 +13,7 @@ export default function TimelineLoading() {
         {/* NarrativeCard skeleton — bleed full-width */}
         <div className="-mx-5">
           <div
-            className="px-5 py-7 space-y-2.5"
+            className="px-5 py-12 space-y-2.5"
             style={{
               background: "oklch(0.982 0.009 82)",
               borderTop: "1px solid oklch(0.944 0.007 82)",

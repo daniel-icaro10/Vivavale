@@ -9,6 +9,8 @@ import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
 import { AtmosphereHero } from "@/features/dashboard/components/AtmosphereHero";
 import { getEmotionalPresence } from "@/features/dashboard/utils/getEmotionalPresence";
 import { getQuietInsight } from "@/features/dashboard/utils/getQuietInsight";
+import { getLongitudinalSignals } from "@/features/insights/utils/getLongitudinalSignals";
+import { MemoryEcho } from "@/features/dashboard/components/MemoryEcho";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -186,6 +188,12 @@ export default async function DashboardPage() {
     totalLogs: data.totalLogsProxy,
   });
 
+  const longitudinalSignals = getLongitudinalSignals({
+    daysSinceLastLog: data.daysSinceLastLog,
+    daysThisWeek: data.daysThisWeek,
+    totalLogs: data.totalLogsProxy,
+  });
+
   return (
     <div className="space-y-7">
       {/* Hero — contextual + atmosphere-aware (client) */}
@@ -198,6 +206,11 @@ export default async function DashboardPage() {
         hasLoggedToday={data.todayLog !== null}
         quietInsight={quietInsight}
       />
+
+      {/* ── Eco longitudinal — memória silenciosa ─────────── */}
+      {mode !== "onboarding" && longitudinalSignals.narrative && (
+        <MemoryEcho narrative={longitudinalSignals.narrative} />
+      )}
 
       {/* ── Onboarding ────────────────────────────────────── */}
       {mode === "onboarding" && (

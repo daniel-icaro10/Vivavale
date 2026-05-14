@@ -46,7 +46,7 @@ export function BodyWeather({ insights }: BodyWeatherProps) {
         style={{ background: "oklch(0.975 0.006 84)" }}
       >
         <div
-          className="absolute inset-0"
+          className="absolute inset-0 vl-breathe"
           style={{
             background: `
               radial-gradient(ellipse 90% 70% at 18% 65%, ${c1}, transparent 62%),

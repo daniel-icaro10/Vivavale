@@ -51,8 +51,20 @@ interface WeeklySummaryCardProps {
 
 const TRENDS_PREVIEW = 2;
 
+function getWeekNarration(daysLogged: number, trendCount: number): string | null {
+  if (daysLogged === 0) return null;
+  if (daysLogged === 1) return "Esta semana ficou mais silenciosa.";
+  if (daysLogged === 2) return "Alguns momentos ficaram registrados esta semana.";
+  if (daysLogged >= 5) return trendCount >= 3
+    ? "Os registros desta semana revelam um ritmo próprio."
+    : "Uma semana com presença constante.";
+  if (daysLogged >= 3) return "Os registros começam a revelar um ritmo.";
+  return null;
+}
+
 export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProps) {
   const [trendsExpanded, setTrendsExpanded] = useState(false);
+  const weekNarration = getWeekNarration(insights.daysLogged, insights.trends.length);
 
   const sorted = sparkLogs.slice().sort((a, b) => a.date.localeCompare(b.date));
   const sparkPain  = sorted.map((l) => ({ date: l.date.slice(5), value: l.pain_level }));
@@ -112,6 +124,17 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
             </button>
           )}
         </div>
+      )}
+
+      {/* Eco narrativo da semana — memória, não análise */}
+      {weekNarration && (
+        <p
+          className="text-[12px] leading-relaxed text-muted-foreground/28"
+          style={{ letterSpacing: "-0.002em" }}
+          aria-hidden="true"
+        >
+          {weekNarration}
+        </p>
       )}
     </section>
   );

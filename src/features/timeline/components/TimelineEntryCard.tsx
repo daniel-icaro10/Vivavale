@@ -1,6 +1,7 @@
 import type { DailyLog } from "@/types/app";
 
 const NOTE_DROPCAP_THRESHOLD = 120;
+const NOTE_REFLECTIVE_THRESHOLD = 200;
 
 function MetricBar({
   label,
@@ -39,23 +40,40 @@ function MetricBar({
 }
 
 export function TimelineEntryCard({ log }: { log: DailyLog }) {
-  const isLongNote = (log.notes?.length ?? 0) >= NOTE_DROPCAP_THRESHOLD;
+  const noteLength = log.notes?.length ?? 0;
+  const isLongNote = noteLength >= NOTE_DROPCAP_THRESHOLD;
+  const isReflective = noteLength >= NOTE_REFLECTIVE_THRESHOLD;
+  const paragraphs = log.notes?.split("\n").filter((p) => p.trim().length > 0) ?? [];
 
   return (
     <div className="pl-1 space-y-4">
       {log.notes && (
         <div
-          className="pl-4 py-0.5"
+          className={`pl-4 ${isReflective ? "py-2" : "py-0.5"}`}
           style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.12)" }}
         >
-          <p
-            className={`text-[15px] leading-[1.9] text-foreground/78 max-w-[62ch] ${
-              isLongNote ? "vl-dropcap" : ""
-            }`}
-            style={{ letterSpacing: "-0.004em" }}
-          >
-            {log.notes}
-          </p>
+          {paragraphs.length > 1 ? (
+            paragraphs.map((para, i) => (
+              <p
+                key={i}
+                className={`text-[15px] leading-[1.9] text-foreground/78 max-w-[62ch] ${
+                  i > 0 ? "mt-3" : ""
+                } ${i === 0 && isLongNote ? "vl-dropcap" : ""}`}
+                style={{ letterSpacing: "-0.004em" }}
+              >
+                {para}
+              </p>
+            ))
+          ) : (
+            <p
+              className={`text-[15px] leading-[1.9] text-foreground/78 max-w-[62ch] ${
+                isLongNote ? "vl-dropcap" : ""
+              }`}
+              style={{ letterSpacing: "-0.004em" }}
+            >
+              {log.notes}
+            </p>
+          )}
         </div>
       )}
       <div className="space-y-2">

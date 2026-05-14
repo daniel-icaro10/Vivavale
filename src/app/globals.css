@@ -223,6 +223,23 @@
   }
 }
 
+/* ─── Breathe — animação ambiente lenta para BodyWeather ──── */
+@keyframes vl-breathe {
+  0%, 100% { opacity: 1; transform: scale(1.08); }
+  50%       { opacity: 0.82; transform: scale(1.10); }
+}
+
+@layer components {
+  .vl-breathe {
+    animation: vl-breathe 10s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vl-breathe {
+      animation: none;
+    }
+  }
+}
+
 /* ─── Float hover — profundidade sutil (desktop only) ─────
    Easing orgânico — mais próximo de respiração do que de spring.
    Apenas desktop com hover real; mobile nunca recebe o lift.    */
@@ -458,6 +475,19 @@ html[data-presence="sparse"] {
   button,
   [role="button"] {
     -webkit-tap-highlight-color: transparent;
+  }
+
+  a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    a, button, [role="button"] {
+      transition: opacity 150ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+    a:active, button:active, [role="button"]:active {
+      opacity: 0.6;
+    }
   }
 
   @media (prefers-reduced-motion: no-preference) {
