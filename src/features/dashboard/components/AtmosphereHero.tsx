@@ -5,8 +5,6 @@ import Link from "next/link";
 import { getDayAtmosphere, getAtmosphereSupplement } from "../utils/getDayAtmosphere";
 import type { DayAtmosphere } from "../utils/getDayAtmosphere";
 
-// useSyncExternalStore: server snapshot → null (sem supplement no SSR).
-// Client snapshot → hora local real. Evita hydration mismatch.
 function useAtmosphere(): DayAtmosphere | null {
   return useSyncExternalStore(
     () => () => {},
@@ -15,11 +13,10 @@ function useAtmosphere(): DayAtmosphere | null {
   );
 }
 
-// Ambient gradient — halo de luz primária quase invisível atrás do hero.
 function getAmbientGradient(atmosphere: DayAtmosphere | null): string | undefined {
   if (!atmosphere || atmosphere === "night") return undefined;
-  const opacity = atmosphere === "morning" ? "0.07" : "0.04";
-  return `radial-gradient(ellipse 160% 120% at 0% 100%, oklch(0.540 0.138 277 / ${opacity}), transparent 60%)`;
+  const opacity = atmosphere === "morning" ? "0.08" : "0.04";
+  return `radial-gradient(ellipse 160% 120% at 0% 100%, var(--ambient-glow, oklch(0.540 0.138 277 / ${opacity})), transparent 60%)`;
 }
 
 interface AtmosphereHeroProps {
@@ -29,6 +26,7 @@ interface AtmosphereHeroProps {
   firstName: string | undefined;
   nextAction: string;
   hasLoggedToday: boolean;
+  quietInsight?: string | null;
 }
 
 export function AtmosphereHero({
@@ -38,6 +36,7 @@ export function AtmosphereHero({
   firstName,
   nextAction,
   hasLoggedToday,
+  quietInsight,
 }: AtmosphereHeroProps) {
   const atmosphere = useAtmosphere();
 
@@ -51,7 +50,11 @@ export function AtmosphereHero({
   return (
     <header
       className={`pb-8 animate-in fade-in-0 ${effectiveDur}`}
-      style={ambientBg ? { background: ambientBg } : undefined}
+      style={
+        ambientBg
+          ? { background: ambientBg, transition: "background var(--motion-ambient)" }
+          : { transition: "background var(--motion-ambient)" }
+      }
     >
       <p className="mb-2 vl-eyebrow">{dateLabel}</p>
       <h1
@@ -68,6 +71,15 @@ export function AtmosphereHero({
       >
         {supplement ?? contextMessage}
       </p>
+      {quietInsight && (
+        <p
+          className="mt-1.5 text-[13px] leading-relaxed text-muted-foreground/35 max-w-[26ch]"
+          style={{ letterSpacing: "-0.003em" }}
+          aria-hidden="true"
+        >
+          {quietInsight}
+        </p>
+      )}
       {nextAction === "review_week" && (
         <Link
           href="/timeline"

@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { WeeklyInsights } from "@/features/insights/types/insights";
 import type { DailyLog } from "@/types/app";
 import { MetricSparkline } from "./MetricSparkline";
+import { BodyWeather } from "./BodyWeather";
 
 function formatWeekRange(start: string, end: string): string {
   const [, sm, sd] = start.split("-").map(Number);
@@ -67,7 +68,10 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       aria-labelledby="weekly-summary-heading"
       className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 duration-300"
     >
-      {/* Header — editorial, sem badge */}
+      {/* Body Weather — visualização abstrata do clima corporal da semana */}
+      <BodyWeather insights={insights} />
+
+      {/* Header — editorial */}
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
           {insights.daysLogged} momento{insights.daysLogged !== 1 ? "s" : ""} registrado{insights.daysLogged !== 1 ? "s" : ""}

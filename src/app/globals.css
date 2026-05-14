@@ -94,6 +94,14 @@
   --shadow-md:   0 4px 8px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.03);
   --shadow-card: 0 1px 3px oklch(0 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.03);
   --shadow-hover:0 6px 16px oklch(0 0 0 / 0.08), 0 2px 6px oklch(0 0 0 / 0.05);
+
+  /* Ambient depth — glow atmosférico por período do dia */
+  --ambient-glow: oklch(0.540 0.128 277 / 0.05);
+
+  /* Motion system 4.0 — tokens por categoria */
+  --motion-ambient:     1500ms cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-narrative:    300ms cubic-bezier(0.25, 1, 0.5, 1);
+  --motion-interaction:  150ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -176,6 +184,24 @@
 @keyframes vl-shimmer {
   0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* ─── Drop cap — initial cap elegante em notas longas ─────── */
+@layer components {
+  .vl-dropcap::first-letter {
+    font-size: 1.35em;
+    line-height: 0.9;
+    float: left;
+    margin-right: 0.06em;
+    color: oklch(0.218 0.024 260 / 0.28);
+    font-weight: 500;
+  }
+}
+
+/* ─── Hairline separator — separação ultra fina ────────────── */
+@utility vl-hairline {
+  height: 0.5px;
+  background-color: oklch(0.940 0.007 85 / 0.8);
 }
 
 @layer components {
@@ -324,12 +350,14 @@ html[data-atmosphere="morning"] {
   --background:       oklch(0.987 0.011 88);
   --muted-foreground: oklch(0.470 0.020 258);
   --shadow-card:      0 1px 4px oklch(0 0 0 / 0.07), 0 1px 2px oklch(0 0 0 / 0.04);
+  --ambient-glow:     oklch(0.680 0.09 82 / 0.07);
 }
 
 html[data-atmosphere="evening"] {
-  --background:   oklch(0.980 0.007 84);
-  --shadow-card:  0 1px 3px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
-  --shadow-hover: 0 4px 12px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.04);
+  --background:       oklch(0.980 0.007 84);
+  --shadow-card:      0 1px 3px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
+  --shadow-hover:     0 4px 12px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.04);
+  --ambient-glow:     oklch(0.540 0.128 277 / 0.04);
 }
 
 html[data-atmosphere="night"] {
@@ -341,6 +369,7 @@ html[data-atmosphere="night"] {
   --input:            oklch(0.946 0.004 80);
   --ring:             oklch(0.515 0.105 277);
   --shadow-card:      0 1px 2px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
+  --ambient-glow:     oklch(0.515 0.105 277 / 0.02);
 }
 
 /* ─── User presence — ritmo atmosférico baseado em continuidade ──
@@ -358,6 +387,25 @@ html[data-presence="consistent"] {
 html[data-presence="sparse"] {
   --background:       oklch(0.981 0.005 83);
   --muted-foreground: oklch(0.488 0.018 258);
+}
+
+/* ─── Premium details — scrollbar, selection, mask ────────── */
+::-webkit-scrollbar       { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.540 0.128 277 / 0.15);
+  border-radius: 9999px;
+}
+
+::selection {
+  background: oklch(0.540 0.128 277 / 0.12);
+  color: oklch(0.218 0.024 260);
+}
+
+/* gradient mask — fade horizontal suave em containers com overflow */
+@utility mask-fade-x {
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
+  mask-image:         linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 
 @layer base {

@@ -42,6 +42,13 @@ export default async function ProfilePage() {
     <>
       <PageHeader title="Perfil" />
 
+      <p
+        className="mb-10 -mt-2 text-[15px] leading-[1.85] text-muted-foreground/55 max-w-reading"
+        style={{ letterSpacing: "-0.004em" }}
+      >
+        Suas informações, no seu ritmo.
+      </p>
+
       <div className="space-y-10">
         {/* Informações pessoais */}
         {data?.profile ? (
@@ -58,7 +65,7 @@ export default async function ProfilePage() {
           </p>
         )}
 
-        <div className="h-px bg-border/50" />
+        <div className="vl-hairline" />
 
         {/* Lembretes */}
         <section aria-labelledby="notifications-heading" className="space-y-5">
@@ -79,7 +86,7 @@ export default async function ProfilePage() {
           />
         </section>
 
-        <div className="h-px bg-border/50" />
+        <div className="vl-hairline" />
 
         {/* Dados pessoais — LGPD */}
         <section aria-labelledby="data-heading" className="space-y-5">
@@ -95,7 +102,7 @@ export default async function ProfilePage() {
           <DeleteAccountSection />
         </section>
 
-        <div className="h-px bg-border/50" />
+        <div className="vl-hairline" />
 
         <LogoutButton />
       </div>

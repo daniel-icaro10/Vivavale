@@ -1,5 +1,7 @@
 import type { DailyLog } from "@/types/app";
 
+const NOTE_DROPCAP_THRESHOLD = 120;
+
 function MetricBar({
   label,
   value,
@@ -37,15 +39,19 @@ function MetricBar({
 }
 
 export function TimelineEntryCard({ log }: { log: DailyLog }) {
+  const isLongNote = (log.notes?.length ?? 0) >= NOTE_DROPCAP_THRESHOLD;
+
   return (
     <div className="pl-1 space-y-4">
       {log.notes && (
         <div
-          className="pl-4"
+          className="pl-4 py-0.5"
           style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.12)" }}
         >
           <p
-            className="text-[15px] leading-[1.9] text-foreground/78"
+            className={`text-[15px] leading-[1.9] text-foreground/78 max-w-[62ch] ${
+              isLongNote ? "vl-dropcap" : ""
+            }`}
             style={{ letterSpacing: "-0.004em" }}
           >
             {log.notes}
@@ -53,10 +59,10 @@ export function TimelineEntryCard({ log }: { log: DailyLog }) {
         </div>
       )}
       <div className="space-y-2">
-        <MetricBar label="Dor" value={log.pain_level} />
-        <MetricBar label="Fadiga" value={log.fatigue_level} />
-        <MetricBar label="Sono" value={log.sleep_quality} />
-        <MetricBar label="Humor" value={log.mood_level} />
+        <MetricBar label="Dor"       value={log.pain_level} />
+        <MetricBar label="Fadiga"    value={log.fatigue_level} />
+        <MetricBar label="Sono"      value={log.sleep_quality} />
+        <MetricBar label="Humor"     value={log.mood_level} />
         <MetricBar label="Ansiedade" value={log.anxiety_level} />
       </div>
     </div>

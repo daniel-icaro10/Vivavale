@@ -8,6 +8,7 @@ import { GuidanceCard } from "@/features/dashboard/components/GuidanceCard";
 import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
 import { AtmosphereHero } from "@/features/dashboard/components/AtmosphereHero";
 import { getEmotionalPresence } from "@/features/dashboard/utils/getEmotionalPresence";
+import { getQuietInsight } from "@/features/dashboard/utils/getQuietInsight";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -172,13 +173,18 @@ export default async function DashboardPage() {
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
 
-  // Presença emocional — substitui getContinuityContext
   const contextMessage = getEmotionalPresence({
     daysSinceLastLog: data.daysSinceLastLog,
     totalLogs: data.totalLogsProxy,
     daysThisWeek: data.daysThisWeek,
     hasLoggedToday: data.todayLog !== null,
   }).phrase;
+
+  const quietInsight = getQuietInsight({
+    daysSinceLastLog: data.daysSinceLastLog,
+    daysThisWeek: data.daysThisWeek,
+    totalLogs: data.totalLogsProxy,
+  });
 
   return (
     <div className="space-y-7">
@@ -190,6 +196,7 @@ export default async function DashboardPage() {
         firstName={firstName}
         nextAction={nextAction}
         hasLoggedToday={data.todayLog !== null}
+        quietInsight={quietInsight}
       />
 
       {/* ── Onboarding ────────────────────────────────────── */}
