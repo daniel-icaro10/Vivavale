@@ -194,7 +194,7 @@ export default async function DashboardPage() {
 
       {/* ── Onboarding ────────────────────────────────────── */}
       {mode === "onboarding" && (
-        <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
+        <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
           <OnboardingChecklist
             hasMedications={false}
             hasLoggedToday={data.todayLog !== null}
@@ -206,10 +206,10 @@ export default async function DashboardPage() {
       {/* ── Recovery: foco no reconectar ──────────────────── */}
       {mode === "recovery" && (
         <>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
@@ -222,10 +222,10 @@ export default async function DashboardPage() {
       {/* ── Encouragement: foco no primeiro registro ──────── */}
       {mode === "encouragement" && (
         <>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
@@ -238,17 +238,17 @@ export default async function DashboardPage() {
       {/* ── Continuity: streak — InsightsStrip em destaque ── */}
       {mode === "continuity" && (
         <>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
             <InsightsStrip
               daysThisWeek={data.daysThisWeek}
               activeMedicationsCount={data.activeMedicationsCount}
               activeRemindersCount={data.activeRemindersCount}
             />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-225`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
@@ -261,24 +261,24 @@ export default async function DashboardPage() {
       {/* ── Reflection: ordem padrão ──────────────────────── */}
       {mode === "reflection" && (
         <>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
             <InsightsStrip
               daysThisWeek={data.daysThisWeek}
               activeMedicationsCount={data.activeMedicationsCount}
               activeRemindersCount={data.activeRemindersCount}
             />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-225`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
               hasLoggedThisWeek={data.hasLoggedThisWeek}
             />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-300`}>
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-300`}>
             <RecentActivity
               lastLogDate={data.lastLogDate}
               todayStr={data.todayStr}
@@ -288,7 +288,7 @@ export default async function DashboardPage() {
       )}
 
       {/* Perfil */}
-      <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-375`}>
+      <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-375`}>
         <div className="h-px bg-border/40 mb-5" aria-hidden="true" />
         <Link
           href="/profile"

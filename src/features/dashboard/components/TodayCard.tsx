@@ -19,40 +19,42 @@ function getDayNarrative(log: TodayLog): string {
   return "Um dia equilibrado.";
 }
 
-function ScoreDot({ label, value }: { label: string; value: number }) {
+function MetricInline({ label, value }: { label: string; value: number }) {
   return (
-    <div className="flex flex-col items-center gap-0.5" aria-label={`${label}: ${value}`}>
-      <span className="text-sm tabular-nums leading-none text-muted-foreground/65">{value}</span>
-      <span className="text-[10px] text-muted-foreground/40">{label}</span>
-    </div>
+    <span
+      className="inline-flex items-baseline gap-1"
+      aria-label={`${label}: ${value}`}
+    >
+      <span className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground/35">
+        {label}
+      </span>
+      <span className="text-sm tabular-nums text-foreground/55">{value}</span>
+    </span>
   );
 }
 
 export function TodayCard({ todayLog }: TodayCardProps) {
   if (todayLog) {
     return (
-      // Sem border — shadow-card + surface branca sobre fundo quente criam depth natural
-      <div className="rounded-2xl bg-card px-5 py-5 shadow-card">
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold text-foreground">Hoje</p>
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/45" aria-hidden="true" />
-          </div>
-          <Link
-            href="/daily"
-            className="text-xs font-medium text-primary/80 hover:text-primary transition-colors min-h-[44px] flex items-center"
-            aria-label="Atualizar registro de hoje"
-          >
-            Atualizar
-          </Link>
-        </div>
-        <p className="mb-4 text-[15px] leading-relaxed text-foreground/75" style={{ letterSpacing: "-0.004em" }}>
+      <div className="rounded-2xl bg-card px-6 py-7 shadow-card">
+        <p className="vl-eyebrow mb-2">Hoje</p>
+        <p
+          className="text-[16px] leading-[1.85] text-foreground/80 max-w-reading"
+          style={{ letterSpacing: "-0.004em" }}
+        >
           {getDayNarrative(todayLog)}
         </p>
-        <div className="flex gap-6">
-          <ScoreDot label="Dor" value={todayLog.pain_level} />
-          <ScoreDot label="Fadiga" value={todayLog.fatigue_level} />
-          <ScoreDot label="Humor" value={todayLog.mood_level} />
+        <div className="mt-5 flex items-center gap-5">
+          <MetricInline label="Dor" value={todayLog.pain_level} />
+          <MetricInline label="Fadiga" value={todayLog.fatigue_level} />
+          <MetricInline label="Humor" value={todayLog.mood_level} />
+          <Link
+            href="/daily"
+            className="ml-auto text-xs font-medium text-primary/65 hover:text-primary transition-colors"
+            aria-label="Atualizar registro de hoje"
+          >
+            Atualizar →
+          </Link>
         </div>
       </div>
     );
@@ -61,21 +63,23 @@ export function TodayCard({ todayLog }: TodayCardProps) {
   return (
     <Link
       href="/daily"
-      className="group block rounded-2xl px-5 py-6 transition-all duration-200 hover:shadow-hover active:scale-[0.985]"
+      className="group block rounded-2xl px-6 py-7 transition-all duration-200 hover:shadow-hover active:scale-[0.985]"
       style={{
         background: "oklch(0.545 0.155 277 / 0.05)",
-        border: "1px solid oklch(0.545 0.155 277 / 0.13)",
-        boxShadow: "0 1px 3px oklch(0.545 0.155 277 / 0.05)",
+        border: "1px solid oklch(0.545 0.155 277 / 0.12)",
       }}
       aria-label="Registrar sintomas de hoje"
     >
-      <p className="text-base font-semibold text-foreground" style={{ letterSpacing: "-0.015em" }}>
+      <p
+        className="text-[16px] font-semibold text-foreground"
+        style={{ letterSpacing: "-0.018em" }}
+      >
         Como está seu corpo hoje?
       </p>
-      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground/80">
+      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground/70">
         Reserve um momento para você.
       </p>
-      <p className="mt-4 text-xs font-medium text-primary/80 group-hover:text-primary transition-colors">
+      <p className="mt-5 text-xs font-medium text-primary/70 group-hover:text-primary transition-colors">
         Registrar →
       </p>
     </Link>

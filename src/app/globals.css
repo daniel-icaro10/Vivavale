@@ -56,7 +56,7 @@
   --popover-foreground: oklch(0.218 0.024 260);
 
   /* Primary: violeta suave — menos elétrico, mais calmo */
-  --primary: oklch(0.540 0.138 277);
+  --primary: oklch(0.540 0.128 277);
   --primary-foreground: oklch(0.99 0 0);
 
   /* Secondary */
@@ -92,7 +92,7 @@
   --shadow-xs:   0 1px 2px oklch(0 0 0 / 0.03);
   --shadow-sm:   0 1px 3px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.03);
   --shadow-md:   0 4px 8px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.03);
-  --shadow-card: 0 1px 4px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.05), 0 1px 2px oklch(0 0 0 / 0.03);
   --shadow-hover:0 6px 16px oklch(0 0 0 / 0.08), 0 2px 6px oklch(0 0 0 / 0.05);
 }
 
@@ -123,6 +123,7 @@
 @utility surface-ambient  { background-color: oklch(0.975 0.008 83); }  /* camada intermediária */
 @utility surface-elevated { background-color: oklch(1 0 0); }           /* card branco */
 @utility surface-journal  { background-color: oklch(0.982 0.009 82); }  /* narrativa — quente */
+@utility surface-warm     { background-color: oklch(0.978 0.012 82); }  /* mais quente — contemplativo */
 
 /* ─── Reading width — conforto de leitura ───────────────── */
 @utility max-w-reading { max-width: 65ch; }
@@ -143,7 +144,7 @@
 /* Narrative — texto editorial, hierarquia primária */
 @utility vl-narrative {
   font-size: 0.9375rem;
-  line-height: 1.8;
+  line-height: 1.9;
   letter-spacing: -0.004em;
   color: oklch(0.218 0.024 260 / 0.82);
 }

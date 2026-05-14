@@ -4,12 +4,33 @@ interface InsightsStripProps {
   activeRemindersCount: number;
 }
 
-function getWeekObservation(days: number): string {
-  if (days === 0) return "Esta semana ainda não tem registros.";
-  if (days === 1) return "Um registro nesta semana.";
-  if (days <= 3) return `${days} dias registrados esta semana.`;
-  if (days <= 5) return `${days} dias esta semana — um ritmo consistente.`;
-  return `${days} dias esta semana — presença constante.`;
+function getContextSentence(
+  daysThisWeek: number,
+  activeMedicationsCount: number,
+  activeRemindersCount: number,
+): string {
+  const hasReminders = activeRemindersCount > 0;
+
+  if (daysThisWeek === 0) {
+    return activeMedicationsCount > 0
+      ? "Essa semana ainda não tem registros."
+      : "Registros ajudam a revelar seus padrões ao longo do tempo.";
+  }
+  if (daysThisWeek >= 6) {
+    return hasReminders
+      ? "Você registrou todos os dias desta semana e seus lembretes estão ativos."
+      : "Você registrou todos os dias desta semana — presença constante.";
+  }
+  if (daysThisWeek >= 4) {
+    return `${daysThisWeek} registros esta semana — padrões começam a ficar mais claros.`;
+  }
+  if (daysThisWeek === 1) {
+    return "Primeiro registro da semana — cada presença conta.";
+  }
+  if (daysThisWeek === 2) {
+    return "Dois registros nesta semana — a continuidade já começa a tomar forma.";
+  }
+  return `${daysThisWeek} registros nesta semana.`;
 }
 
 export function InsightsStrip({
@@ -17,28 +38,13 @@ export function InsightsStrip({
   activeMedicationsCount,
   activeRemindersCount,
 }: InsightsStripProps) {
-  const remText =
-    activeRemindersCount > 0
-      ? ` · ${activeRemindersCount === 1 ? "1 lembrete" : `${activeRemindersCount} lembretes`}`
-      : "";
-
   return (
-    <div className="px-1 space-y-1.5" aria-label="Resumo de atividade">
-      <p className="vl-eyebrow">Esta semana</p>
-      <p
-        className="text-[15px] leading-relaxed text-foreground/75"
-        style={{ letterSpacing: "-0.004em" }}
-      >
-        {getWeekObservation(daysThisWeek)}
-      </p>
-      {activeMedicationsCount > 0 && (
-        <p className="vl-metric">
-          {activeMedicationsCount === 1
-            ? "1 remédio ativo"
-            : `${activeMedicationsCount} remédios ativos`}
-          {remText}
-        </p>
-      )}
-    </div>
+    <p
+      className="px-1 text-[15px] leading-relaxed text-foreground/65"
+      style={{ letterSpacing: "-0.004em" }}
+      aria-label="Resumo de atividade"
+    >
+      {getContextSentence(daysThisWeek, activeMedicationsCount, activeRemindersCount)}
+    </p>
   );
 }

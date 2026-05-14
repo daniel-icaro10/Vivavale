@@ -14,34 +14,27 @@ export default function DashboardLoading() {
         <div className="mt-1 h-4 w-60 rounded vl-shimmer" style={{ animationDelay: "160ms" }} />
       </div>
 
-      {/* TodayCard skeleton — shadow only, sem border */}
+      {/* TodayCard skeleton — editorial surface */}
       <div
-        className="rounded-2xl bg-card px-5 py-5 shadow-card"
+        className="rounded-2xl bg-card px-6 py-7 shadow-card"
         aria-hidden="true"
       >
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="h-3.5 w-10 rounded vl-shimmer" />
-            <div className="h-1.5 w-1.5 rounded-full vl-shimmer" />
-          </div>
-          <div className="h-3.5 w-12 rounded vl-shimmer" />
-        </div>
-        <div className="mb-4 h-4 w-48 rounded vl-shimmer" style={{ animationDelay: "60ms" }} />
-        <div className="flex gap-6">
+        <div className="h-2 w-8 rounded-full vl-shimmer mb-2" />
+        <div className="h-5 w-52 rounded vl-shimmer" style={{ animationDelay: "40ms" }} />
+        <div className="mt-5 flex items-center gap-5">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="flex flex-col items-center gap-1">
-              <div className="h-4 w-4 rounded vl-shimmer" style={{ animationDelay: `${i * 40}ms` }} />
-              <div className="h-2.5 w-8 rounded vl-shimmer" style={{ animationDelay: `${i * 40 + 20}ms` }} />
+            <div key={i} className="flex items-baseline gap-1">
+              <div className="h-2 w-7 rounded-full vl-shimmer" style={{ animationDelay: `${i * 30}ms` }} />
+              <div className="h-3.5 w-4 rounded vl-shimmer" style={{ animationDelay: `${i * 30 + 15}ms` }} />
             </div>
           ))}
+          <div className="ml-auto h-3 w-16 rounded vl-shimmer" style={{ animationDelay: "80ms" }} />
         </div>
       </div>
 
-      {/* InsightsStrip skeleton — texto observacional */}
-      <div className="px-1 space-y-2" aria-hidden="true">
-        <div className="h-2 w-20 rounded-full vl-shimmer" />
-        <div className="h-4 w-52 rounded vl-shimmer" style={{ animationDelay: "40ms" }} />
-        <div className="h-3 w-36 rounded vl-shimmer" style={{ animationDelay: "80ms" }} />
+      {/* InsightsStrip skeleton — frase contextual única */}
+      <div className="px-1" aria-hidden="true">
+        <div className="h-4 w-64 rounded vl-shimmer" />
       </div>
 
       {/* Profile link skeleton — separador + linha minimal */}

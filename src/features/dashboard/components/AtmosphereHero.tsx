@@ -16,11 +16,10 @@ function useAtmosphere(): DayAtmosphere | null {
 }
 
 // Ambient gradient — halo de luz primária quase invisível atrás do hero.
-// A intensidade varia por período do dia. À noite, ausência de luz.
 function getAmbientGradient(atmosphere: DayAtmosphere | null): string | undefined {
   if (!atmosphere || atmosphere === "night") return undefined;
-  const opacity = atmosphere === "morning" ? "0.06" : "0.04";
-  return `radial-gradient(ellipse 130% 100% at 5% 100%, oklch(0.540 0.138 277 / ${opacity}), transparent 65%)`;
+  const opacity = atmosphere === "morning" ? "0.07" : "0.04";
+  return `radial-gradient(ellipse 160% 120% at 0% 100%, oklch(0.540 0.138 277 / ${opacity}), transparent 60%)`;
 }
 
 interface AtmosphereHeroProps {
@@ -51,21 +50,19 @@ export function AtmosphereHero({
 
   return (
     <header
-      className={`pb-3 animate-in fade-in-0 slide-in-from-bottom-2 ${effectiveDur}`}
+      className={`pb-8 animate-in fade-in-0 slide-in-from-bottom-1 ${effectiveDur}`}
       style={ambientBg ? { background: ambientBg } : undefined}
     >
-      <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.095em] text-muted-foreground/40">
-        {dateLabel}
-      </p>
+      <p className="mb-2 vl-eyebrow">{dateLabel}</p>
       <h1
-        className="text-2xl font-semibold text-foreground vl-hero-title"
-        style={{ letterSpacing: "-0.028em", lineHeight: 1.15 }}
+        className="text-[28px] font-semibold text-foreground"
+        style={{ letterSpacing: "-0.030em", lineHeight: 1.1 }}
       >
         {firstName ? `Olá, ${firstName}` : "Olá"}
       </h1>
       <p
-        className={`mt-2 text-[15px] leading-[1.75] transition-colors duration-500 ${
-          isNight ? "text-muted-foreground/60" : "text-muted-foreground/80"
+        className={`mt-3 text-[15px] leading-[1.85] max-w-xs transition-colors duration-500 ${
+          isNight ? "text-muted-foreground/55" : "text-muted-foreground/75"
         }`}
         style={{ letterSpacing: "-0.004em" }}
       >
@@ -74,7 +71,7 @@ export function AtmosphereHero({
       {nextAction === "review_week" && (
         <Link
           href="/timeline"
-          className="mt-2.5 inline-block py-1 text-xs text-muted-foreground/45 hover:text-primary transition-colors"
+          className="mt-3 inline-block py-1 text-xs text-muted-foreground/40 hover:text-primary transition-colors"
         >
           Ver sua semana →
         </Link>
