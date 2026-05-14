@@ -65,7 +65,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
   return (
     <section
       aria-labelledby="weekly-summary-heading"
-      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-300"
+      className="rounded-2xl bg-card shadow-card space-y-5 px-5 py-6 animate-in fade-in-0 duration-300"
     >
       {/* Header — editorial, sem badge */}
       <div>

@@ -45,7 +45,7 @@ export function TimelineEntryCard({ log }: { log: DailyLog }) {
           className="pl-3 mb-1"
           style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.15)" }}
         >
-          <p className="text-[15px] leading-7 text-foreground/80">
+          <p className="text-[15px] leading-[1.9] text-foreground/80" style={{ letterSpacing: "-0.004em" }}>
             {log.notes}
           </p>
         </div>

@@ -50,7 +50,7 @@ export function AtmosphereHero({
 
   return (
     <header
-      className={`pb-8 animate-in fade-in-0 slide-in-from-bottom-1 ${effectiveDur}`}
+      className={`pb-8 animate-in fade-in-0 ${effectiveDur}`}
       style={ambientBg ? { background: ambientBg } : undefined}
     >
       <p className="mb-2 vl-eyebrow">{dateLabel}</p>

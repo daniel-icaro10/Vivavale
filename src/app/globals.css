@@ -376,9 +376,9 @@ html[data-atmosphere="night"] {
   }
 
   :focus-visible {
-    outline: 2px solid var(--ring);
-    outline-offset: 2px;
-    border-radius: 4px;
+    outline: 1.5px solid oklch(0.540 0.128 277 / 0.45);
+    outline-offset: 3px;
+    border-radius: 6px;
   }
 
   /* Safari iOS: evita zoom automático em inputs com font-size < 16px */

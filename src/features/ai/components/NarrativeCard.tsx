@@ -13,7 +13,7 @@ export function NarrativeCard({ text, isAI, bleed = false }: NarrativeCardProps)
     <div
       role="note"
       aria-label="Narrativa da semana"
-      className={`animate-in fade-in-0 slide-in-from-bottom-2 duration-300 ${
+      className={`animate-in fade-in-0 duration-300 ${
         bleed ? "px-5 py-10" : "rounded-2xl px-6 pt-6 pb-8"
       }`}
       style={
@@ -25,10 +25,7 @@ export function NarrativeCard({ text, isAI, bleed = false }: NarrativeCardProps)
             }
           : {
               background: "oklch(0.982 0.009 82)",
-              borderTop: "2px solid oklch(0.540 0.138 277 / 0.10)",
-              borderLeft: "1px solid oklch(0.944 0.007 82)",
-              borderRight: "1px solid oklch(0.944 0.007 82)",
-              borderBottom: "1px solid oklch(0.944 0.007 82)",
+              border: "1px solid oklch(0.944 0.007 82)",
             }
       }
     >

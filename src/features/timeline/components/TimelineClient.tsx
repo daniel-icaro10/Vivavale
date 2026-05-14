@@ -72,7 +72,7 @@ export function TimelineClient({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       {/* Narrativa semanal — full-bleed editorial */}
       {weeklyNarrative && (
         <div className="-mx-5">
@@ -107,7 +107,7 @@ export function TimelineClient({
 
       {/* Timeline dia a dia — ritmo de leitura orgânico */}
       {dayGroups.length > 0 && (
-        <section aria-label="Registros diários" className="space-y-10">
+        <section aria-label="Registros diários" className="space-y-12">
           {dayGroups.map((group) => (
             <TimelineDayGroup key={group.date} group={group} />
           ))}
@@ -116,19 +116,19 @@ export function TimelineClient({
 
       {/* Paginação */}
       {cursor && (
-        <div className="flex justify-center pb-4">
+        <div className="flex justify-center py-2">
           <button
             onClick={loadMore}
             disabled={isPending}
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-medium text-muted-foreground shadow-xs transition-all hover:text-foreground hover:shadow-card disabled:opacity-50"
+            className="inline-flex items-center gap-2 py-2 text-xs font-medium text-muted-foreground/50 hover:text-muted-foreground transition-colors disabled:opacity-30"
           >
             {isPending ? (
               <>
-                <Spinner className="h-4 w-4" aria-hidden="true" />
+                <Spinner className="h-3.5 w-3.5" aria-hidden="true" />
                 Carregando…
               </>
             ) : (
-              "Ver registros anteriores"
+              "Registros anteriores"
             )}
           </button>
         </div>

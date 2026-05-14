@@ -18,7 +18,7 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center px-5 py-16 text-center animate-in fade-in-0 slide-in-from-bottom-2 duration-300",
+        "flex flex-col items-center px-5 py-16 text-center animate-in fade-in-0 duration-300",
         className,
       )}
     >
