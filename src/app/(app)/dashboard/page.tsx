@@ -71,6 +71,16 @@ function getDashboardMode(data: DashboardData): DashboardMode {
   return "reflection";
 }
 
+// ─── Next likely action ───────────────────────────────────
+type NextAction = "log_today" | "review_week" | "manage_reminders" | "reflect";
+
+function getNextLikelyAction(data: DashboardData, mode: DashboardMode): NextAction {
+  if (!data.todayLog && mode !== "onboarding") return "log_today";
+  if (data.hasMedications && !data.hasReminders) return "manage_reminders";
+  if (data.todayLog && data.daysThisWeek >= 3) return "review_week";
+  return "reflect";
+}
+
 // ─── Contextual continuity message ───────────────────────
 function getContinuityContext(data: DashboardData, mode: DashboardMode): string {
   const { todayLog, daysThisWeek, lastLogDate, todayStr } = data;
@@ -94,7 +104,7 @@ function getContinuityContext(data: DashboardData, mode: DashboardMode): string 
       return "Cada registro conta, mesmo que seja o primeiro da semana.";
 
     case "continuity":
-      if (daysThisWeek >= 6) return "Você está presente todos os dias. Isso tem valor.";
+      if (daysThisWeek >= 6) return `${daysThisWeek} dias registrados esta semana — os padrões ficam mais claros assim.`;
       if (daysThisWeek >= 4) return "Você está presente e isso faz diferença.";
       return "Boa sequência essa semana.";
 
@@ -202,6 +212,7 @@ export default async function DashboardPage() {
   const mode = getDashboardMode(data);
   const ambient = getAmbientState(mode);
   const dur = enterDuration(ambient);
+  const nextAction = getNextLikelyAction(data, mode);
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
   const contextMessage = getContinuityContext(data, mode);
@@ -219,6 +230,14 @@ export default async function DashboardPage() {
         <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
           {contextMessage}
         </p>
+        {nextAction === "review_week" && (
+          <Link
+            href="/timeline"
+            className="mt-2 inline-block py-1 text-xs text-muted-foreground/55 hover:text-primary transition-colors"
+          >
+            Ver sua semana →
+          </Link>
+        )}
       </header>
 
       {/* ── Onboarding ────────────────────────────────────── */}
@@ -251,10 +270,10 @@ export default async function DashboardPage() {
       {/* ── Encouragement: foco no primeiro registro ──────── */}
       {mode === "encouragement" && (
         <>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
@@ -267,17 +286,17 @@ export default async function DashboardPage() {
       {/* ── Continuity: streak — InsightsStrip em destaque ── */}
       {mode === "continuity" && (
         <>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
             <InsightsStrip
               daysThisWeek={data.daysThisWeek}
               activeMedicationsCount={data.activeMedicationsCount}
               activeRemindersCount={data.activeRemindersCount}
             />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
@@ -290,24 +309,24 @@ export default async function DashboardPage() {
       {/* ── Reflection: ordem padrão ──────────────────────── */}
       {mode === "reflection" && (
         <>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-150`}>
             <InsightsStrip
               daysThisWeek={data.daysThisWeek}
               activeMedicationsCount={data.activeMedicationsCount}
               activeRemindersCount={data.activeRemindersCount}
             />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-225`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
               hasReminders={data.hasReminders}
               hasLoggedThisWeek={data.hasLoggedThisWeek}
             />
           </div>
-          <div className="animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-300">
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-300`}>
             <RecentActivity
               lastLogDate={data.lastLogDate}
               todayStr={data.todayStr}
@@ -320,6 +339,7 @@ export default async function DashboardPage() {
       <Link
         href="/profile"
         className={`flex items-center justify-between rounded-2xl bg-card px-5 py-4 float-hover active:scale-[0.985] animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-300`}
+
         style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
       >

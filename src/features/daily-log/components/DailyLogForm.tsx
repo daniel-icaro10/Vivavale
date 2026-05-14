@@ -15,39 +15,14 @@ import { SaveIndicator } from "./SaveIndicator";
 
 // Grupos emocionais — reduz carga cognitiva, cria narrativa visual
 const PHYSICAL_FIELDS = [
-  {
-    key: "pain_level" as const,
-    label: "Dor",
-    low: "Sem dor",
-    high: "Intensa",
-  },
-  {
-    key: "fatigue_level" as const,
-    label: "Fadiga",
-    low: "Descansado",
-    high: "Exausto",
-  },
+  { key: "pain_level"    as const, label: "Dor",    low: "Sem dor",    high: "Intensa"   },
+  { key: "fatigue_level" as const, label: "Fadiga",  low: "Descansado", high: "Exausto"   },
 ] as const;
 
 const WELLBEING_FIELDS = [
-  {
-    key: "sleep_quality" as const,
-    label: "Sono",
-    low: "Péssimo",
-    high: "Ótimo",
-  },
-  {
-    key: "mood_level" as const,
-    label: "Humor",
-    low: "Muito baixo",
-    high: "Muito bem",
-  },
-  {
-    key: "anxiety_level" as const,
-    label: "Ansiedade",
-    low: "Calmo",
-    high: "Intensa",
-  },
+  { key: "sleep_quality" as const, label: "Sono",      low: "Péssimo",   high: "Ótimo"    },
+  { key: "mood_level"    as const, label: "Humor",     low: "Muito baixo", high: "Muito bem" },
+  { key: "anxiety_level" as const, label: "Ansiedade", low: "Calmo",     high: "Intensa"  },
 ] as const;
 
 function toLocalDateString(date: Date): string {
@@ -74,10 +49,7 @@ function SliderField({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between gap-3">
-        <label
-          htmlFor={fieldKey}
-          className="text-sm font-medium text-foreground"
-        >
+        <label htmlFor={fieldKey} className="text-sm font-medium text-foreground">
           {label}
         </label>
         <span
@@ -117,6 +89,8 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
 
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | undefined>();
+  // Auto-abrir notas se já tem conteúdo — reduz perda de contexto
+  const [notesVisible, setNotesVisible] = useState(!!initialLog?.notes);
 
   const {
     register,
@@ -126,13 +100,13 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   } = useForm<DailyLogFormData>({
     resolver: zodResolver(dailyLogSchema),
     defaultValues: {
-      date: todayStr,
+      date:          todayStr,
       pain_level:    initialLog?.pain_level    ?? 5,
       fatigue_level: initialLog?.fatigue_level ?? 5,
       sleep_quality: initialLog?.sleep_quality ?? 5,
       mood_level:    initialLog?.mood_level    ?? 5,
       anxiety_level: initialLog?.anxiety_level ?? 5,
-      notes: initialLog?.notes ?? "",
+      notes:         initialLog?.notes ?? "",
     },
   });
 
@@ -173,13 +147,13 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
       <section aria-labelledby="physical-group" className="space-y-5">
         <h2
           id="physical-group"
-          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
+          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
         >
           Sintomas físicos
         </h2>
         <div
           className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
-          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+          style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         >
           {PHYSICAL_FIELDS.map(({ key, label, low, high }) => (
             <SliderField
@@ -199,13 +173,13 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
       <section aria-labelledby="wellbeing-group" className="space-y-5">
         <h2
           id="wellbeing-group"
-          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
+          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
         >
           Bem-estar
         </h2>
         <div
           className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
-          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
+          style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         >
           {WELLBEING_FIELDS.map(({ key, label, low, high }) => (
             <SliderField
@@ -221,43 +195,64 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
         </div>
       </section>
 
-      {/* Anotações */}
-      <section aria-labelledby="notes-group" className="space-y-5">
-        <h2
-          id="notes-group"
-          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/70"
-        >
-          Anotações
-        </h2>
-        <div
-          className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-2"
-          style={{ border: "1px solid oklch(0.928 0.010 85)" }}
-        >
-          <label
-            htmlFor="notes"
-            className="text-sm font-medium text-foreground"
+      {/* Anotações — colapsável para reduzir carga cognitiva */}
+      <div>
+        {notesVisible ? (
+          <section aria-labelledby="notes-group" className="space-y-5 animate-in fade-in-0 duration-200">
+            <div className="flex items-center justify-between">
+              <h2
+                id="notes-group"
+                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
+              >
+                Anotações
+              </h2>
+              <button
+                type="button"
+                onClick={() => setNotesVisible(false)}
+                className="text-xs text-muted-foreground/40 hover:text-muted-foreground transition-colors py-1 px-1"
+                aria-label="Ocultar campo de anotações"
+              >
+                ocultar
+              </button>
+            </div>
+            <div
+              className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-2"
+              style={{ border: "1px solid oklch(0.940 0.007 85)" }}
+            >
+              <label htmlFor="notes" className="text-sm font-medium text-foreground">
+                Como foi seu dia?
+              </label>
+              <p className="text-xs text-muted-foreground/70">
+                Opcional — uma frase, um pensamento.
+              </p>
+              <Textarea
+                id="notes"
+                placeholder="Hoje eu senti..."
+                rows={3}
+                maxLength={1000}
+                aria-invalid={!!errors.notes}
+                className="resize-none leading-relaxed px-3.5 py-3 mt-2 text-[15px]"
+                {...register("notes")}
+              />
+              {errors.notes && (
+                <p role="alert" className="text-xs text-destructive">
+                  {errors.notes.message}
+                </p>
+              )}
+            </div>
+          </section>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setNotesVisible(true)}
+            className="flex items-center gap-2 py-2 text-xs font-medium text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            aria-label="Adicionar anotação ao registro"
           >
-            Como foi seu dia?
-          </label>
-          <p className="text-xs text-muted-foreground">
-            Opcional — uma frase, um pensamento, o que quiser registrar.
-          </p>
-          <Textarea
-            id="notes"
-            placeholder="Hoje eu senti..."
-            rows={4}
-            maxLength={1000}
-            aria-invalid={!!errors.notes}
-            className="resize-none leading-relaxed px-3.5 py-3 mt-2"
-            {...register("notes")}
-          />
-          {errors.notes && (
-            <p role="alert" className="text-xs text-destructive">
-              {errors.notes.message}
-            </p>
-          )}
-        </div>
-      </section>
+            <span className="text-base leading-none" aria-hidden="true">+</span>
+            Adicionar anotação
+          </button>
+        )}
+      </div>
 
       {/* Salvar */}
       <div className="space-y-3 pb-2">
