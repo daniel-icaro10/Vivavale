@@ -458,6 +458,42 @@ html[data-performance="reduced"] [style*="--ambient-glow"] {
   --ambient-glow: transparent;
 }
 
+/* ─── Stimulation low — estados fragile/recovering ───────────
+   O ambiente se retira. Menos gradiente, menos motion, menos sombra.
+   O usuário ocupa mais espaço do que o app.                         */
+html[data-stimulation="low"] .vl-breathe {
+  animation: none;
+}
+
+html[data-stimulation="low"] .vl-shimmer {
+  animation: none;
+  background: oklch(0.960 0.008 80);
+}
+
+html[data-stimulation="low"] [class*="animate-in"] {
+  animation-duration: 300ms !important;
+}
+
+html[data-stimulation="low"] * {
+  transition-duration: 200ms !important;
+}
+
+html[data-stimulation="low"] .shadow-card {
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+html[data-stimulation="low"] [style*="--ambient-glow"] {
+  --ambient-glow: transparent;
+}
+
+/* Suaviza tokens de cor — fundo ligeiramente mais neutro */
+html[data-stimulation="low"] {
+  --background:       oklch(0.981 0.004 82);
+  --ambient-glow:     transparent;
+  --shadow-card:      0 0 0 1px var(--border);
+  --shadow-hover:     0 2px 6px oklch(0 0 0 / 0.04);
+}
+
 /* ─── Premium details — scrollbar, selection, mask ────────── */
 ::-webkit-scrollbar       { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }

@@ -4,6 +4,7 @@ import {
   type UserPresence,
   type JourneyState,
 } from "@/features/dashboard/components/AtmosphereProvider";
+import type { CognitiveLoad } from "@/features/ux/cognitive/detectCognitiveLoad";
 import { cn } from "@/lib/utils";
 
 type AppShellProps = {
@@ -11,12 +12,13 @@ type AppShellProps = {
   className?: string;
   presence?: UserPresence;
   journey?: JourneyState;
+  cognitiveLoad?: CognitiveLoad;
 };
 
-export function AppShell({ children, className, presence, journey }: AppShellProps) {
+export function AppShell({ children, className, presence, journey, cognitiveLoad }: AppShellProps) {
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
-      <AtmosphereProvider presence={presence} journey={journey} />
+      <AtmosphereProvider presence={presence} journey={journey} cognitiveLoad={cognitiveLoad} />
       <main
         className={cn(
           "flex-1 px-5 pt-8 pb-[calc(72px+env(safe-area-inset-bottom))]",

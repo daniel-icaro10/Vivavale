@@ -4,16 +4,19 @@ import type {
   UserPresence,
   JourneyState,
 } from "@/features/dashboard/components/AtmosphereProvider";
+import { detectCognitiveLoad, type CognitiveLoad } from "@/features/ux/cognitive/detectCognitiveLoad";
+import { getLongitudinalSignals } from "@/features/insights/utils/getLongitudinalSignals";
 
 interface LayoutSignals {
   presence: UserPresence;
   journey: JourneyState | undefined;
+  cognitiveLoad: CognitiveLoad;
 }
 
 async function getLayoutSignals(): Promise<LayoutSignals> {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { presence: "steady", journey: undefined };
+  if (!user) return { presence: "steady", journey: undefined, cognitiveLoad: "calm" as const };
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
@@ -27,7 +30,7 @@ async function getLayoutSignals(): Promise<LayoutSignals> {
     .limit(10);
 
   if (!logs || logs.length === 0) {
-    return { presence: "sparse", journey: "beginning" };
+    return { presence: "sparse", journey: "beginning", cognitiveLoad: "calm" };
   }
 
   const totalLogsProxy = logs.length;
@@ -56,10 +59,27 @@ async function getLayoutSignals(): Promise<LayoutSignals> {
     journey = "beginning";
   }
 
-  return { presence, journey };
+  // Carga cognitiva — governa density da UI e data-stimulation
+  const { state: longitudinalState } = getLongitudinalSignals({
+    daysSinceLastLog: daysSinceLast,
+    daysThisWeek,
+    totalLogs: totalLogsProxy,
+  });
+  const cognitiveLoad = detectCognitiveLoad({
+    daysSinceLastLog: daysSinceLast,
+    daysThisWeek,
+    totalLogs: totalLogsProxy,
+    longitudinalState,
+  });
+
+  return { presence, journey, cognitiveLoad };
 }
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
-  const { presence, journey } = await getLayoutSignals();
-  return <AppShell presence={presence} journey={journey}>{children}</AppShell>;
+  const { presence, journey, cognitiveLoad } = await getLayoutSignals();
+  return (
+    <AppShell presence={presence} journey={journey} cognitiveLoad={cognitiveLoad}>
+      {children}
+    </AppShell>
+  );
 }

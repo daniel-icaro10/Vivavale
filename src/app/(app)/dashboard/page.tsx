@@ -21,6 +21,8 @@ import {
 } from "@/features/insights/reflection/getDiscovery";
 import { detectTemporalPatterns } from "@/features/insights/temporal/detectTemporalPatterns";
 import { MemoryThread } from "@/features/dashboard/components/MemoryThread";
+import { detectCognitiveLoad } from "@/features/ux/cognitive/detectCognitiveLoad";
+import { shouldBeSilent } from "@/features/presence/silence/shouldBeSilent";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -185,6 +187,29 @@ export default async function DashboardPage() {
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
 
+  // Carga cognitiva — governa densidade e silêncio de insights
+  const longitudinalSignalsForLoad = getLongitudinalSignals({
+    daysSinceLastLog: data.daysSinceLastLog,
+    daysThisWeek: data.daysThisWeek,
+    totalLogs: data.totalLogsProxy,
+  });
+  const cognitiveLoad = detectCognitiveLoad({
+    daysSinceLastLog: data.daysSinceLastLog,
+    daysThisWeek: data.daysThisWeek,
+    totalLogs: data.totalLogsProxy,
+    longitudinalState: longitudinalSignalsForLoad.state,
+  });
+  const isQuiet =
+    cognitiveLoad === "fragile" || cognitiveLoad === "recovering"
+      ? true
+      : shouldBeSilent({
+          cognitiveLoad,
+          longitudinalState: longitudinalSignalsForLoad.state,
+          daysSinceLastLog: data.daysSinceLastLog,
+          daysThisWeek: data.daysThisWeek,
+          totalLogs: data.totalLogsProxy,
+        });
+
   const contextMessage = getEmotionalPresence({
     daysSinceLastLog: data.daysSinceLastLog,
     totalLogs: data.totalLogsProxy,
@@ -198,11 +223,8 @@ export default async function DashboardPage() {
     totalLogs: data.totalLogsProxy,
   });
 
-  const longitudinalSignals = getLongitudinalSignals({
-    daysSinceLastLog: data.daysSinceLastLog,
-    daysThisWeek: data.daysThisWeek,
-    totalLogs: data.totalLogsProxy,
-  });
+  // Reutiliza os sinais já calculados para carga cognitiva
+  const longitudinalSignals = longitudinalSignalsForLoad;
 
   // Hierarquia de eco com rarity: slow discovery → temporal pattern →
   // discovery → reflection → longitudinal narrative
@@ -210,7 +232,7 @@ export default async function DashboardPage() {
   type EchoResult = { narrative: string; isTemporal: boolean } | null;
   let echo: EchoResult = null;
 
-  if (mode !== "onboarding") {
+  if (mode !== "onboarding" && !isQuiet) {
     const total = data.totalLogsProxy;
     const state = longitudinalSignals.state;
 
@@ -309,13 +331,15 @@ export default async function DashboardPage() {
       {/* ── Continuity: streak — InsightsStrip em destaque ── */}
       {mode === "continuity" && (
         <>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
-            <InsightsStrip
-              daysThisWeek={data.daysThisWeek}
-              activeMedicationsCount={data.activeMedicationsCount}
-              activeRemindersCount={data.activeRemindersCount}
-            />
-          </div>
+          {!isQuiet && (
+            <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
+              <InsightsStrip
+                daysThisWeek={data.daysThisWeek}
+                activeMedicationsCount={data.activeMedicationsCount}
+                activeRemindersCount={data.activeRemindersCount}
+              />
+            </div>
+          )}
           <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
@@ -335,13 +359,15 @@ export default async function DashboardPage() {
           <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-75`}>
             <TodayCard todayLog={data.todayLog} />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
-            <InsightsStrip
-              daysThisWeek={data.daysThisWeek}
-              activeMedicationsCount={data.activeMedicationsCount}
-              activeRemindersCount={data.activeRemindersCount}
-            />
-          </div>
+          {!isQuiet && (
+            <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-150`}>
+              <InsightsStrip
+                daysThisWeek={data.daysThisWeek}
+                activeMedicationsCount={data.activeMedicationsCount}
+                activeRemindersCount={data.activeRemindersCount}
+              />
+            </div>
+          )}
           <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-225`}>
             <GuidanceCard
               hasMedications={data.hasMedications}
@@ -349,12 +375,14 @@ export default async function DashboardPage() {
               hasLoggedThisWeek={data.hasLoggedThisWeek}
             />
           </div>
-          <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-300`}>
-            <RecentActivity
-              lastLogDate={data.lastLogDate}
-              todayStr={data.todayStr}
-            />
-          </div>
+          {!isQuiet && (
+            <div className={`animate-in fade-in-0 slide-in-from-bottom-1 ${dur} anim-delay-300`}>
+              <RecentActivity
+                lastLogDate={data.lastLogDate}
+                todayStr={data.todayStr}
+              />
+            </div>
+          )}
         </>
       )}
 
