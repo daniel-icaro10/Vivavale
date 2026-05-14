@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import { ServiceWorkerRegistration } from "@/components/shared/ServiceWorkerRegistration";
+import { OfflineBanner } from "@/components/shared/OfflineBanner";
+import { InstallPrompt } from "@/components/shared/InstallPrompt";
+import { PerformanceProvider } from "@/features/shared/components/PerformanceProvider";
 import "./globals.css";
 
 const geist = Geist({
@@ -29,6 +32,11 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "VivaLeve",
+    startupImage: [],
+  },
+  icons: {
+    apple: [{ url: "/icon.svg", sizes: "any" }],
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
   },
   formatDetection: {
     telephone: false,
@@ -61,7 +69,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={geist.variable} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground antialiased">
+        <PerformanceProvider />
         <ServiceWorkerRegistration />
+        <OfflineBanner />
+        <InstallPrompt />
         {children}
       </body>
     </html>

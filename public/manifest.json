@@ -1,21 +1,54 @@
 {
+  "id": "/",
   "name": "VivaLeve",
   "short_name": "VivaLeve",
   "description": "Acompanhamento gentil para pessoas com fibromialgia e dores crônicas.",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f7f8fc",
-  "theme_color": "#f7f8fc",
+  "display_override": ["standalone", "minimal-ui"],
+  "background_color": "#f9f8f6",
+  "theme_color": "#f9f8f6",
   "lang": "pt-BR",
+  "dir": "ltr",
   "orientation": "portrait",
-  "categories": ["health", "medical"],
+  "categories": ["health", "lifestyle"],
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/icon.svg",
       "sizes": "any",
-      "type": "image/x-icon",
+      "type": "image/svg+xml",
       "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon-monochrome.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "monochrome"
     }
-  ]
+  ],
+  "shortcuts": [
+    {
+      "name": "Registrar hoje",
+      "short_name": "Registrar",
+      "description": "Abrir o registro do dia",
+      "url": "/daily",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Linha do tempo",
+      "short_name": "Timeline",
+      "description": "Ver histórico de registros",
+      "url": "/timeline",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ],
+  "screenshots": [],
+  "prefer_related_applications": false
 }

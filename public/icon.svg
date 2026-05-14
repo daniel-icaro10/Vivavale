@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="VivaLeve">
+  <!-- Background — warm off-white, maskable safe zone centered -->
+  <rect width="512" height="512" fill="#f9f8f6" rx="114" />
+
+  <!-- Subtle ambient circle -->
+  <circle cx="256" cy="256" r="144" fill="oklch(0.540 0.128 277 / 0.07)" />
+
+  <!-- Mark: soft circle with gentle wave — represents rhythm/continuity -->
+  <circle cx="256" cy="256" r="96" stroke="oklch(0.540 0.128 277)" stroke-width="10" fill="none" stroke-opacity="0.55" />
+
+  <!-- Wave inside: gentle arc representing body rhythm, not medical -->
+  <path
+    d="M196 268 C214 244 230 280 256 256 C282 232 298 268 316 256"
+    stroke="oklch(0.540 0.128 277)"
+    stroke-width="10"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+    stroke-opacity="0.80"
+  />
+</svg>

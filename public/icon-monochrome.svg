@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="VivaLeve">
+  <!-- Monochrome badge icon — white on transparent for notification badges -->
+  <circle cx="48" cy="48" r="36" stroke="white" stroke-width="3.5" fill="none" />
+  <path
+    d="M30 51 C37 41 43 55 48 48 C53 41 59 51 66 48"
+    stroke="white"
+    stroke-width="3.5"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+</svg>
