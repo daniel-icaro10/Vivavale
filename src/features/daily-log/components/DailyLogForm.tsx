@@ -233,10 +233,17 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
                 rows={3}
                 maxLength={1000}
                 aria-invalid={!!errors.notes}
-                className="resize-none leading-relaxed px-3.5 py-3 mt-2 text-[15px]"
+                className="resize-none leading-relaxed px-3.5 py-3 mt-2 text-[15px] overflow-hidden"
+                style={{ minHeight: "80px" }}
                 onFocus={(e) => {
-                  // iOS: scroll até o campo ao abrir teclado
-                  setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 320);
+                  // iOS: scroll até o campo ao abrir teclado (aguarda resize do viewport)
+                  setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 340);
+                }}
+                onInput={(e) => {
+                  // Auto-height: cresce com o conteúdo sem barra de scroll
+                  const el = e.currentTarget;
+                  el.style.height = "auto";
+                  el.style.height = `${el.scrollHeight}px`;
                 }}
                 {...register("notes")}
               />
@@ -260,13 +267,16 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
         )}
       </div>
 
-      {/* Salvar */}
-      <div className="space-y-3 pb-2">
+      {/* Salvar — sticky acima do teclado em iOS/Android */}
+      <div
+        className="space-y-3 pb-2 sticky bottom-[calc(72px+env(safe-area-inset-bottom))]"
+        style={{ zIndex: 10 }}
+      >
         <SaveIndicator status={saveStatus} errorMessage={errorMessage} />
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="h-12 w-full rounded-xl text-sm font-semibold"
+          className="h-12 w-full rounded-xl text-sm font-semibold shadow-sm"
         >
           {isSubmitting ? (
             <>

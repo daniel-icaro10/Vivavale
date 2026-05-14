@@ -490,6 +490,19 @@ html[data-performance="reduced"] [style*="--ambient-glow"] {
   mask-image:         linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%);
 }
 
+/* ── Safe area utilities — Dynamic Island, notch, Android gesture nav ── */
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility pb-nav-safe {
+  padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -538,12 +551,26 @@ html[data-performance="reduced"] [style*="--ambient-glow"] {
   }
 
   button,
-  [role="button"] {
-    -webkit-tap-highlight-color: transparent;
-  }
-
+  [role="button"],
   a {
     -webkit-tap-highlight-color: transparent;
+    cursor: pointer; /* iOS Safari: cursor pointer = sem delay 300ms */
+  }
+
+  /* Evita seleção de texto acidental durante gestures de scroll */
+  nav, [role="navigation"] {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* iOS: habilita momentum scroll em containers com overflow */
+  [style*="overflow"] {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Scroll padding para que inputs focados não fiquem atrás do teclado */
+  html {
+    scroll-padding-bottom: calc(72px + env(safe-area-inset-bottom) + 16px);
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -569,7 +596,7 @@ html[data-performance="reduced"] [style*="--ambient-glow"] {
     }
   }
 
-  /* ── Native feel: inertial scroll + touch refinements ─────── */
+/* ── Native feel: inertial scroll + touch refinements ─────── */
 
   /* Momentum scroll nativo em containers scroll */
   [class*="overflow-y-auto"],

@@ -1,4 +1,4 @@
-// App lifecycle — visibilitychange web + App events Capacitor.
+// App lifecycle — visibilitychange web + App events Capacitor + online recovery.
 // Call initLifecycle() once from a client component. Cleans up on unmount.
 
 import { Capacitor } from "@capacitor/core";
@@ -7,6 +7,7 @@ type LifecycleHandler = () => void;
 
 const resumeHandlers: Set<LifecycleHandler> = new Set();
 const pauseHandlers:  Set<LifecycleHandler> = new Set();
+const onlineHandlers: Set<LifecycleHandler> = new Set();
 
 export function onResume(handler: LifecycleHandler): () => void {
   resumeHandlers.add(handler);
@@ -18,8 +19,15 @@ export function onPause(handler: LifecycleHandler): () => void {
   return () => pauseHandlers.delete(handler);
 }
 
+// Registra handler para quando conexão retorna (online event)
+export function onOnline(handler: LifecycleHandler): () => void {
+  onlineHandlers.add(handler);
+  return () => onlineHandlers.delete(handler);
+}
+
 function fireResume() { resumeHandlers.forEach((h) => h()); }
 function firePause()  { pauseHandlers.forEach((h) => h()); }
+function fireOnline() { onlineHandlers.forEach((h) => h()); }
 
 let initialized = false;
 
@@ -41,6 +49,15 @@ export function initLifecycle(): () => void {
 
   document.addEventListener("visibilitychange", handleVisibility);
   cleanups.push(() => document.removeEventListener("visibilitychange", handleVisibility));
+
+  // ── Web: online event — reconexão → flush queue + resume ─
+  const handleOnline = () => {
+    fireOnline();
+    fireResume(); // reconectar = retomar
+  };
+
+  window.addEventListener("online", handleOnline);
+  cleanups.push(() => window.removeEventListener("online", handleOnline));
 
   // ── Native: Capacitor App events ────────────────────────
   if (Capacitor.isNativePlatform()) {

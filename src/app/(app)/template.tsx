@@ -1,9 +1,13 @@
-// template.tsx re-renderiza a cada navegação — isso ativa a transição de página.
-// fade limpo 180ms: presença sem distração.
+import { AmbientPullToRefresh } from "@/components/shared/AmbientPullToRefresh";
+
+// template.tsx re-renderiza a cada navegação — ativa a transição de página.
+// AmbientPullToRefresh envolve o conteúdo: pull-to-refresh atmosférico em todas as páginas do app.
 export default function AppTemplate({ children }: { children: React.ReactNode }) {
   return (
-    <div className="animate-in fade-in-0 duration-[180ms]">
-      {children}
-    </div>
+    <AmbientPullToRefresh>
+      <div className="animate-in fade-in-0 duration-[180ms]">
+        {children}
+      </div>
+    </AmbientPullToRefresh>
   );
 }
