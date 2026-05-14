@@ -10,7 +10,7 @@
 --   - Edge Function send-reminders deployada.
 --   - Segredo SUPABASE_SERVICE_ROLE_KEY disponível.
 --
--- IMPORTANTE: substituir <PROJECT_REF> pelo ref real do projeto
+-- IMPORTANTE: substituir aoxspnhrwnysyybvmzes pelo ref real do projeto
 -- Supabase antes de aplicar esta migration em produção.
 -- Em desenvolvimento local, usar a URL do Supabase local.
 -- ============================================================
@@ -38,7 +38,7 @@ WHERE EXISTS (
 -- O header Authorization usa a service_role key para que a Edge
 -- Function possa verificar a origem (se necessário).
 --
--- Substituir <PROJECT_REF> pelo identificador real do projeto.
+-- Substituir aoxspnhrwnysyybvmzes pelo identificador real do projeto.
 -- Exemplo: abcdefghijklmnop (16 caracteres alfanuméricos).
 -- ============================================================
 
@@ -47,7 +47,7 @@ SELECT cron.schedule(
   '* * * * *',
   $$
     SELECT extensions.http_post(
-      url     => 'https://<PROJECT_REF>.supabase.co/functions/v1/send-reminders',
+      url     => 'https://aoxspnhrwnysyybvmzes.supabase.co/functions/v1/send-reminders',
       headers => jsonb_build_object(
         'Content-Type',  'application/json',
         'Authorization', 'Bearer ' || current_setting('app.service_role_key', true)

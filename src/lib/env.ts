@@ -29,4 +29,8 @@ export const env = {
 
   // Service role key — nunca exposta ao cliente. Apenas server-side para admin ops.
   serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY ?? null,
+
+  // VAPID public key — seguro expor no cliente (pública por design do protocolo).
+  // Usada em push.ts para assinar a subscription do browser.
+  vapidPublicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ?? null,
 } as const;
