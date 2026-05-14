@@ -1,25 +1,27 @@
-// Larguras dos blocos de sintoma em px, correspondentes a:
-// Dor, Fadiga, Sono, Humor, Ansiedade
-const SYMPTOM_WIDTHS = [28, 38, 30, 34, 50];
-
 function SkeletonCard({ hasNotes }: { hasNotes: boolean }) {
   return (
-    <div className="rounded-xl border border-border bg-card px-4 py-4">
-      {/* Weekday + data */}
-      <div className="flex items-baseline gap-2">
-        <div className="h-3 w-7 rounded bg-muted" />
-        <div className="h-5 w-32 rounded bg-muted" />
+    <div className="py-4">
+      <div className="flex items-baseline gap-2.5 mb-2.5">
+        <div className="h-2 w-7 rounded-full vl-shimmer" />
+        <div className="h-4 w-32 rounded vl-shimmer" style={{ animationDelay: "30ms" }} />
       </div>
-
-      {/* Sintomas */}
-      <div className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1">
-        {SYMPTOM_WIDTHS.map((w, i) => (
-          <div key={i} className="h-3.5 rounded bg-muted" style={{ width: w }} />
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        {[28, 38, 30, 34, 50].map((w, i) => (
+          <div
+            key={i}
+            className="h-3 rounded vl-shimmer"
+            style={{ width: w, animationDelay: `${i * 20}ms` }}
+          />
         ))}
       </div>
-
-      {/* Anotação */}
-      {hasNotes && <div className="mt-3 h-3 w-3/4 rounded bg-muted" />}
+      {hasNotes && (
+        <div
+          className="mt-3 pl-4"
+          style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.08)" }}
+        >
+          <div className="h-3 w-3/4 rounded vl-shimmer" />
+        </div>
+      )}
     </div>
   );
 }
@@ -29,17 +31,15 @@ function SkeletonGroup({
   cards,
 }: {
   headerWidth: number;
-  cards: boolean[]; // true = card com notes
+  cards: boolean[];
 }) {
   return (
     <div>
-      {/* MonthHeader */}
-      <div className="mb-4 border-b border-border pb-2">
-        <div className="h-4 rounded bg-muted" style={{ width: headerWidth }} />
+      <div className="mb-5 flex items-center gap-4">
+        <div className="h-2 rounded-full vl-shimmer shrink-0" style={{ width: headerWidth }} />
+        <div className="h-px flex-1 bg-border/50" aria-hidden="true" />
       </div>
-
-      {/* Cards */}
-      <div className="space-y-3">
+      <div className="divide-y divide-border/30">
         {cards.map((hasNotes, i) => (
           <SkeletonCard key={i} hasNotes={hasNotes} />
         ))}
@@ -53,23 +53,15 @@ export default function HistoryLoading() {
     <div role="status" aria-label="Carregando histórico">
       <p className="sr-only">Carregando...</p>
 
-      <div aria-hidden="true" className="animate-pulse">
-        {/* PageHeader */}
-        <div className="mb-6">
-          <div className="h-6 w-20 rounded-md bg-muted" />
-          <div className="mt-1 h-4 w-56 rounded bg-muted" />
+      <div aria-hidden="true">
+        <div className="mb-8 space-y-2">
+          <div className="h-2.5 w-24 rounded-full vl-shimmer" />
+          <div className="h-7 w-24 rounded-lg vl-shimmer" style={{ animationDelay: "60ms" }} />
         </div>
 
-        {/* Grupos de mês */}
         <div className="space-y-10">
-          <SkeletonGroup
-            headerWidth={72}
-            cards={[true, true, false]}
-          />
-          <SkeletonGroup
-            headerWidth={80}
-            cards={[true, false]}
-          />
+          <SkeletonGroup headerWidth={72} cards={[true, true, false]} />
+          <SkeletonGroup headerWidth={80} cards={[true, false]} />
         </div>
       </div>
     </div>

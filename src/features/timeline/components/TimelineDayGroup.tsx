@@ -11,7 +11,7 @@ export function TimelineDayGroup({ group }: { group: DayGroup }) {
       <div className="flex items-center gap-3 mb-5">
         <h3
           id={`day-${group.date}`}
-          className="shrink-0 text-xs font-medium uppercase tracking-widest text-muted-foreground/50"
+          className="shrink-0 vl-eyebrow"
         >
           {group.label}
         </h3>

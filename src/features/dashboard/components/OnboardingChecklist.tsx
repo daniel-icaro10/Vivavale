@@ -11,21 +11,21 @@ const STEPS = [
   {
     key: "medications",
     title: "Adicionar seus remédios",
-    description: "Para o app saber o que você toma.",
+    description: "Para o app entender sua rotina.",
     href: "/medications",
     label: "Adicionar",
   },
   {
     key: "log",
     title: "Registrar como você está hoje",
-    description: "Um registro rápido dos seus sintomas.",
+    description: "Um momento rápido de atenção ao seu corpo.",
     href: "/daily",
     label: "Registrar",
   },
   {
     key: "reminders",
     title: "Configurar um lembrete",
-    description: "Para não esquecer de tomar seus remédios.",
+    description: "Para não esquecer de cuidar de você.",
     href: "/reminders",
     label: "Configurar",
   },
@@ -48,22 +48,22 @@ export function OnboardingChecklist({
 
   const welcomeBody =
     stepsCompleted === 0
-      ? "Três passos simples para começar o seu acompanhamento."
+      ? "Três passos simples para começar o acompanhamento."
       : stepsCompleted === 1
         ? "Continue no seu ritmo — sem pressa."
         : "Mais um passo e você está pronto.";
 
   return (
-    <div
-      className="rounded-2xl px-5 py-6 shadow-xs"
-      style={{ background: "oklch(0.970 0.010 80)", border: "1px solid oklch(0.940 0.012 80)" }}
-    >
-      <p className="text-base font-semibold text-foreground">{welcomeTitle}</p>
-      <p className="mt-1 text-sm text-muted-foreground">
+    <div className="py-2">
+      <p className="vl-eyebrow mb-3">{welcomeTitle}</p>
+      <p
+        className="text-[15px] leading-relaxed text-foreground/75"
+        style={{ letterSpacing: "-0.004em" }}
+      >
         {welcomeBody}
       </p>
 
-      <ol className="mt-5 space-y-4" aria-label="Passos de configuração">
+      <ol className="mt-6 space-y-5" aria-label="Passos de configuração">
         {STEPS.map((step, i) => {
           const isDone = completed[i];
           return (
@@ -72,8 +72,8 @@ export function OnboardingChecklist({
                 className={cn(
                   "mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold",
                   isDone
-                    ? "bg-primary/15 text-primary"
-                    : "border border-border text-muted-foreground",
+                    ? "bg-primary/12 text-primary/60"
+                    : "border border-border/60 text-muted-foreground/50",
                 )}
                 aria-hidden="true"
               >
@@ -85,7 +85,7 @@ export function OnboardingChecklist({
                   className={cn(
                     "text-sm",
                     isDone
-                      ? "font-medium text-muted-foreground line-through decoration-muted-foreground/40"
+                      ? "text-muted-foreground/50 line-through decoration-muted-foreground/30"
                       : "font-medium text-foreground",
                   )}
                 >
@@ -94,12 +94,12 @@ export function OnboardingChecklist({
 
                 {!isDone && (
                   <>
-                    <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                    <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground/65">
                       {step.description}
                     </p>
                     <Link
                       href={step.href}
-                      className="mt-1.5 inline-flex min-h-[44px] items-center gap-1 py-2.5 text-xs font-medium text-primary hover:underline"
+                      className="mt-1.5 inline-flex min-h-[44px] items-center py-2.5 text-xs font-medium text-primary/80 hover:text-primary transition-colors"
                     >
                       {step.label} →
                     </Link>

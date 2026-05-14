@@ -147,13 +147,12 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
       <section aria-labelledby="physical-group" className="space-y-5">
         <h2
           id="physical-group"
-          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
+          className="vl-eyebrow"
         >
           Sintomas físicos
         </h2>
         <div
           className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
-          style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         >
           {PHYSICAL_FIELDS.map(({ key, label, low, high }) => (
             <SliderField
@@ -173,13 +172,12 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
       <section aria-labelledby="wellbeing-group" className="space-y-5">
         <h2
           id="wellbeing-group"
-          className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
+          className="vl-eyebrow"
         >
           Bem-estar
         </h2>
         <div
           className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6"
-          style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         >
           {WELLBEING_FIELDS.map(({ key, label, low, high }) => (
             <SliderField
@@ -202,7 +200,7 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
             <div className="flex items-center justify-between">
               <h2
                 id="notes-group"
-                className="text-xs font-semibold uppercase tracking-widest text-muted-foreground/60"
+                className="vl-eyebrow"
               >
                 Anotações
               </h2>
@@ -217,7 +215,6 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
             </div>
             <div
               className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-2"
-              style={{ border: "1px solid oklch(0.940 0.007 85)" }}
             >
               <label htmlFor="notes" className="text-sm font-medium text-foreground">
                 Como foi seu dia?

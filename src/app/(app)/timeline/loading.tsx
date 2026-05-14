@@ -10,26 +10,25 @@ export default function TimelineLoading() {
           <div className="h-6 w-28 rounded-lg vl-shimmer" style={{ animationDelay: "60ms" }} />
         </div>
 
-        {/* NarrativeCard skeleton — fundo quente */}
-        <div
-          className="rounded-2xl px-6 py-5 space-y-2.5"
-          style={{
-            background: "oklch(0.982 0.009 82)",
-            borderTop: "2px solid oklch(0.540 0.138 277 / 0.06)",
-            border: "1px solid oklch(0.944 0.007 82)",
-          }}
-        >
-          <div className="h-2 w-16 rounded-full vl-shimmer" />
-          <div className="h-4 w-full rounded vl-shimmer" style={{ animationDelay: "60ms" }} />
-          <div className="h-4 w-5/6 rounded vl-shimmer" style={{ animationDelay: "80ms" }} />
-          <div className="h-4 w-3/5 rounded vl-shimmer" style={{ animationDelay: "100ms" }} />
+        {/* NarrativeCard skeleton — bleed full-width */}
+        <div className="-mx-5">
+          <div
+            className="px-5 py-7 space-y-2.5"
+            style={{
+              background: "oklch(0.982 0.009 82)",
+              borderTop: "1px solid oklch(0.944 0.007 82)",
+              borderBottom: "1px solid oklch(0.944 0.007 82)",
+            }}
+          >
+            <div className="h-2 w-16 rounded-full vl-shimmer" />
+            <div className="h-4 w-full rounded vl-shimmer" style={{ animationDelay: "60ms" }} />
+            <div className="h-4 w-5/6 rounded vl-shimmer" style={{ animationDelay: "80ms" }} />
+            <div className="h-4 w-3/5 rounded vl-shimmer" style={{ animationDelay: "100ms" }} />
+          </div>
         </div>
 
-        {/* WeeklySummaryCard skeleton */}
-        <div
-          className="rounded-2xl bg-card px-5 py-6 space-y-4"
-          style={{ border: "1px solid oklch(0.940 0.007 85)" }}
-        >
+        {/* WeeklySummaryCard skeleton — shadow only, sem border */}
+        <div className="rounded-2xl bg-card px-5 py-6 shadow-card space-y-4">
           <div className="space-y-1">
             <div className="h-2 w-20 rounded vl-shimmer" />
             <div className="h-5 w-32 rounded vl-shimmer" style={{ animationDelay: "40ms" }} />
@@ -48,15 +47,13 @@ export default function TimelineLoading() {
           </div>
         </div>
 
-        {/* Day groups skeleton — journal style, sem cards */}
+        {/* Day groups skeleton — journal style */}
         {[0, 1, 2].map((i) => (
           <div key={i} className="space-y-5">
-            {/* Date label + separator */}
             <div className="flex items-center gap-3">
-              <div className="h-2.5 w-24 rounded vl-shimmer" style={{ animationDelay: `${i * 80}ms` }} />
+              <div className="h-2 w-24 rounded-full vl-shimmer" style={{ animationDelay: `${i * 80}ms` }} />
               <div className="h-px flex-1 bg-border/40" />
             </div>
-            {/* Journal content — no card border */}
             <div className="pl-1 space-y-2.5">
               {i === 0 && (
                 <div
