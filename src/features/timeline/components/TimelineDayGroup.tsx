@@ -8,7 +8,7 @@ export function TimelineDayGroup({ group }: { group: DayGroup }) {
       className="animate-in fade-in-0 duration-300"
     >
       {/* Rótulo editorial com linha separadora */}
-      <div className="flex items-center gap-3 pt-2 mb-6">
+      <div className="flex items-center gap-3 pt-3 mb-8">
         <h3
           id={`day-${group.date}`}
           className="shrink-0 vl-eyebrow"

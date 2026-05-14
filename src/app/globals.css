@@ -343,6 +343,23 @@ html[data-atmosphere="night"] {
   --shadow-card:      0 1px 2px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
 }
 
+/* ─── User presence — ritmo atmosférico baseado em continuidade ──
+   Mudanças sub-limiares: o usuário sente, mas não percebe.         */
+html[data-presence="returning"] {
+  --background:       oklch(0.979 0.005 82);
+  --muted-foreground: oklch(0.490 0.018 258);
+  --shadow-card:      0 1px 2px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
+}
+
+html[data-presence="consistent"] {
+  --background:       oklch(0.985 0.008 87);
+}
+
+html[data-presence="sparse"] {
+  --background:       oklch(0.981 0.005 83);
+  --muted-foreground: oklch(0.488 0.018 258);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

@@ -14,7 +14,7 @@ export function NarrativeCard({ text, isAI, bleed = false }: NarrativeCardProps)
       role="note"
       aria-label="Narrativa da semana"
       className={`animate-in fade-in-0 duration-300 ${
-        bleed ? "px-5 py-10" : "rounded-2xl px-6 pt-6 pb-8"
+        bleed ? "px-5 py-12" : "rounded-2xl px-6 pt-8 pb-10"
       }`}
       style={
         bleed

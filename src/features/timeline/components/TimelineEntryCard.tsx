@@ -16,18 +16,18 @@ function MetricBar({
       role="group"
       aria-label={`${label}: ${value} de ${max}`}
     >
-      <span className="w-14 shrink-0 text-[11px] text-muted-foreground/50">
+      <span className="w-14 shrink-0 text-[11px] text-muted-foreground/40">
         {label}
       </span>
-      <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-border/40">
+      <div className="relative h-1 flex-1 overflow-hidden rounded-full bg-border/30">
         <div
-          className="absolute inset-y-0 left-0 rounded-full bg-primary/25"
+          className="absolute inset-y-0 left-0 rounded-full bg-primary/18"
           style={{ width: `${pct}%` }}
           aria-hidden="true"
         />
       </div>
       <span
-        className="w-4 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground/50"
+        className="w-4 shrink-0 text-right text-[11px] tabular-nums text-muted-foreground/40"
         aria-hidden="true"
       >
         {value}
@@ -38,20 +38,21 @@ function MetricBar({
 
 export function TimelineEntryCard({ log }: { log: DailyLog }) {
   return (
-    <div className="pl-1 space-y-3">
-      {/* Notas ganham prioridade visual — leitura editorial */}
+    <div className="pl-1 space-y-4">
       {log.notes && (
         <div
-          className="pl-3 mb-1"
-          style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.15)" }}
+          className="pl-4"
+          style={{ borderLeft: "2px solid oklch(0.540 0.138 277 / 0.12)" }}
         >
-          <p className="text-[15px] leading-[1.9] text-foreground/80" style={{ letterSpacing: "-0.004em" }}>
+          <p
+            className="text-[15px] leading-[1.9] text-foreground/78"
+            style={{ letterSpacing: "-0.004em" }}
+          >
             {log.notes}
           </p>
         </div>
       )}
-      {/* Métricas — secondárias, leves */}
-      <div className="space-y-2.5">
+      <div className="space-y-2">
         <MetricBar label="Dor" value={log.pain_level} />
         <MetricBar label="Fadiga" value={log.fatigue_level} />
         <MetricBar label="Sono" value={log.sleep_quality} />

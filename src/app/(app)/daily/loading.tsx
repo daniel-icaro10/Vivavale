@@ -1,48 +1,50 @@
-// Widths in px match the actual label lengths: Dor, Fadiga, Sono, Humor, Ansiedade
-const SLIDER_LABEL_WIDTHS = [28, 48, 36, 48, 72];
-
 export default function DailyLoading() {
   return (
-    <div role="status" className="space-y-8">
-      <p className="sr-only">Carregando registro diário...</p>
+    <div role="status" aria-label="Carregando registro diário" className="space-y-6">
+      <p className="sr-only">Carregando...</p>
 
-      <div aria-hidden="true" className="animate-pulse space-y-8">
-        {/* Header */}
-        <div className="space-y-2">
-          <div className="h-4 w-36 rounded-md bg-muted" />
-          <div className="h-7 w-52 rounded-md bg-muted" />
-        </div>
+      {/* Header */}
+      <div className="pb-1 space-y-3" aria-hidden="true">
+        <div className="h-2.5 w-28 rounded-full vl-shimmer" />
+        <div className="h-7 w-48 rounded-lg vl-shimmer" style={{ animationDelay: "60ms" }} />
+      </div>
 
-        {/* Sliders */}
-        <div className="space-y-6">
-          {SLIDER_LABEL_WIDTHS.map((labelWidth, i) => (
+      {/* Sintomas físicos */}
+      <section aria-hidden="true" className="space-y-5">
+        <div className="h-2.5 w-24 rounded-full vl-shimmer" />
+        <div className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6">
+          {[0, 1].map((i) => (
             <div key={i} className="space-y-2">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 space-y-1.5">
-                  <div className="h-4 rounded bg-muted" style={{ width: labelWidth }} />
-                  <div className="h-3 w-40 rounded bg-muted" />
-                </div>
-                <div className="h-6 w-6 shrink-0 rounded bg-muted" />
+              <div className="flex items-center justify-between gap-3">
+                <div className="h-3.5 w-16 rounded vl-shimmer" style={{ animationDelay: `${i * 40}ms` }} />
+                <div className="h-4 w-5 rounded vl-shimmer" />
               </div>
-              <div className="h-11 w-full rounded-lg bg-muted" />
+              <div className="h-11 w-full rounded vl-shimmer" style={{ animationDelay: `${i * 40 + 20}ms` }} />
             </div>
           ))}
         </div>
+      </section>
 
-        {/* Textarea */}
-        <div className="space-y-2">
-          <div>
-            <div className="h-4 w-24 rounded bg-muted" />
-            <div className="mt-1 h-3 w-52 rounded bg-muted" />
-          </div>
-          <div className="h-28 w-full rounded-lg bg-muted" />
+      {/* Bem-estar */}
+      <section aria-hidden="true" className="space-y-5">
+        <div className="h-2.5 w-20 rounded-full vl-shimmer" style={{ animationDelay: "80ms" }} />
+        <div className="rounded-2xl bg-card px-5 py-5 shadow-card space-y-6">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <div className="h-3.5 w-20 rounded vl-shimmer" style={{ animationDelay: `${i * 40 + 80}ms` }} />
+                <div className="h-4 w-5 rounded vl-shimmer" />
+              </div>
+              <div className="h-11 w-full rounded vl-shimmer" style={{ animationDelay: `${i * 40 + 100}ms` }} />
+            </div>
+          ))}
         </div>
+      </section>
 
-        {/* Save indicator + button */}
-        <div className="space-y-3">
-          <div className="min-h-10" />
-          <div className="h-11 w-full rounded-lg bg-muted" />
-        </div>
+      {/* Salvar */}
+      <div className="space-y-3 pb-2" aria-hidden="true">
+        <div className="min-h-10" />
+        <div className="h-12 w-full rounded-xl vl-shimmer" style={{ animationDelay: "120ms" }} />
       </div>
     </div>
   );

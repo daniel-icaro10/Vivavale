@@ -8,7 +8,7 @@ interface ReflectionCardProps {
 export function ReflectionCard({ text, isAI }: ReflectionCardProps) {
   return (
     <div
-      className="rounded-2xl px-6 pt-8 pb-9 animate-in fade-in-0 duration-300"
+      className="rounded-2xl px-7 pt-10 pb-12 animate-in fade-in-0 duration-300"
       style={{ background: "oklch(0.975 0.009 80)" }}
       role="note"
       aria-label="Reflexão sobre seus registros"

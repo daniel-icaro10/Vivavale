@@ -14,10 +14,13 @@ export function getAtmosphereSupplement(
   hasLoggedToday: boolean,
 ): string | null {
   if (atmosphere === "morning" && !hasLoggedToday) {
-    return "Como seu corpo está começando o dia?";
+    return "Como você está começando o dia?";
   }
   if (atmosphere === "evening" && !hasLoggedToday) {
-    return "Talvez valha registrar como o dia terminou.";
+    return "Talvez valha um momento para registrar como o dia foi.";
+  }
+  if (atmosphere === "night" && hasLoggedToday) {
+    return "Você registrou hoje. Boa noite.";
   }
   return null;
 }

@@ -70,7 +70,7 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
       {/* Header — editorial, sem badge */}
       <div>
         <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40">
-          Semana · {insights.daysLogged} dia{insights.daysLogged !== 1 ? "s" : ""}
+          {insights.daysLogged} momento{insights.daysLogged !== 1 ? "s" : ""} registrado{insights.daysLogged !== 1 ? "s" : ""}
         </p>
         <h2
           id="weekly-summary-heading"

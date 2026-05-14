@@ -12,11 +12,11 @@ interface TodayCardProps {
 
 function getDayNarrative(log: TodayLog): string {
   const { pain_level, fatigue_level, mood_level } = log;
-  if (pain_level <= 3 && fatigue_level <= 3) return "Um dia mais leve.";
-  if (pain_level >= 7 || fatigue_level >= 7) return "Um dia mais pesado.";
-  if (mood_level >= 7) return "O humor ajudou hoje.";
-  if (mood_level <= 3) return "Um dia difícil pelo lado emocional.";
-  return "Um dia equilibrado.";
+  if (pain_level <= 3 && fatigue_level <= 3) return "O dia parece ter sido mais leve.";
+  if (pain_level >= 7 || fatigue_level >= 7) return "Um dia mais intenso pelo corpo.";
+  if (mood_level >= 7) return "O humor pareceu ajudar hoje.";
+  if (mood_level <= 3) return "Um dia mais difícil pelo lado emocional.";
+  return "Um dia que passou de forma mais equilibrada.";
 }
 
 function MetricInline({ label, value }: { label: string; value: number }) {
