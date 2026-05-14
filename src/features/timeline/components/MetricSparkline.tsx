@@ -16,27 +16,25 @@ interface MetricSparklineProps {
 export function MetricSparkline({
   data,
   label,
-  color = "oklch(0.545 0.155 277)",
+  color = "oklch(0.545 0.155 277 / 0.5)",
 }: MetricSparklineProps) {
   if (data.length < 2) return null;
 
   return (
     <div className="w-full">
-      <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-        {label}
-      </p>
-      <ResponsiveContainer width="100%" height={56}>
-        <LineChart data={data} margin={{ top: 4, right: 2, bottom: 2, left: 2 }}>
+      <p className="mb-1.5 vl-eyebrow">{label}</p>
+      <ResponsiveContainer width="100%" height={48}>
+        <LineChart data={data} margin={{ top: 4, right: 4, bottom: 4, left: 4 }}>
           <YAxis domain={[0, 10]} hide />
           <Line
             type="basis"
             dataKey="value"
             stroke={color}
-            strokeWidth={2}
+            strokeWidth={1.5}
             dot={false}
             activeDot={false}
             isAnimationActive
-            animationDuration={600}
+            animationDuration={900}
             animationEasing="ease-out"
           />
         </LineChart>

@@ -125,6 +125,45 @@
 /* ─── Reading width — conforto de leitura ───────────────── */
 @utility max-w-reading { max-width: 65ch; }
 
+/* ─── VivaLeve Language — sistema tipográfico assinatura ───
+   Elementos recorrentes que criam identidade reconhecível.   */
+
+/* Eyebrow — label de categoria, aparece em todo o app */
+@utility vl-eyebrow {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.095em;
+  color: oklch(0.476 0.020 258 / 0.40);
+  line-height: 1;
+}
+
+/* Narrative — texto editorial, hierarquia primária */
+@utility vl-narrative {
+  font-size: 0.9375rem;
+  line-height: 1.8;
+  letter-spacing: -0.004em;
+  color: oklch(0.218 0.024 260 / 0.82);
+}
+
+/* Metric — dados secundários, tom neutro */
+@utility vl-metric {
+  font-size: 0.6875rem;
+  color: oklch(0.476 0.020 258 / 0.55);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Accent border — assinatura cromática VivaLeve */
+@utility vl-accent-left {
+  border-left: 2px solid oklch(0.540 0.138 277 / 0.12);
+}
+
+/* Hero title — tracking mais apertado para presença editorial */
+@utility vl-hero-title {
+  letter-spacing: -0.028em;
+  line-height: 1.15;
+}
+
 /* ─────────────────────────────────────────────────────────
    Slider VivaLeve
    --vl-pct: progresso em %, setado via inline style no React.

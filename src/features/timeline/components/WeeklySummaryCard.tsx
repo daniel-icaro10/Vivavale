@@ -86,11 +86,11 @@ export function WeeklySummaryCard({ insights, sparkLogs }: WeeklySummaryCardProp
         {insights.summary}
       </p>
 
-      {/* Sparklines — textura, não gráfico técnico */}
+      {/* Sparklines — ecos visuais, não dashboards */}
       {sparkPain.length >= 2 && (
         <div className="grid grid-cols-2 gap-4">
-          <MetricSparkline data={sparkPain}  label="Dor"  color="oklch(0.545 0.155 277 / 0.7)" />
-          <MetricSparkline data={sparkSleep} label="Sono" color="oklch(0.720 0.115 228 / 0.7)" />
+          <MetricSparkline data={sparkPain}  label="Dor"  color="oklch(0.545 0.155 277 / 0.45)" />
+          <MetricSparkline data={sparkSleep} label="Sono" color="oklch(0.720 0.115 228 / 0.45)" />
         </div>
       )}
 

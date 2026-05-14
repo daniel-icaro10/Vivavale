@@ -14,15 +14,16 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <header className={cn("mb-7", className)}>
+    <header className={cn("mb-8", className)}>
       <div className="flex items-start justify-between gap-4">
         <div>
           {description && (
-            <p className="mb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
-              {description}
-            </p>
+            <p className="mb-1.5 vl-eyebrow">{description}</p>
           )}
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h1
+            className="text-2xl font-semibold text-foreground"
+            style={{ letterSpacing: "-0.025em", lineHeight: 1.2 }}
+          >
             {title}
           </h1>
         </div>
