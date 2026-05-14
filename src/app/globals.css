@@ -115,10 +115,12 @@
 @utility anim-delay-450 { animation-delay: 450ms; }
 
 /* ─── Depth system (Oura feeling) ───────────────────────── */
-/* surface-2: blocos contextuais — quente suave */
-@utility surface-2 { background-color: oklch(0.978 0.006 85); }
-/* surface-3: hero / destaque — fundo levemente pigmentado */
-@utility surface-3 { background-color: oklch(0.970 0.010 80); }
+@utility surface-2        { background-color: oklch(0.978 0.006 85); }
+@utility surface-3        { background-color: oklch(0.970 0.010 80); }
+/* Surfaces ambientais — depth por contraste, não por outline */
+@utility surface-soft     { background-color: oklch(0.986 0.004 84); }
+@utility surface-elevated { background-color: oklch(1 0 0); }
+@utility surface-journal  { background-color: oklch(0.981 0.006 82); }
 
 /* ─── Reading width — conforto de leitura ───────────────── */
 @utility max-w-reading { max-width: 65ch; }
@@ -263,6 +265,25 @@
   }
 }
 
+/* ─── Temporal atmosphere — resposta sutil ao horário (via AtmosphereProvider) ──
+   Mudanças intencionalmente mínimas — quase subconscientes.                      */
+html[data-atmosphere="morning"] {
+  --background: oklch(0.984 0.009 88);
+}
+
+html[data-atmosphere="evening"] {
+  --shadow-card:  0 1px 3px oklch(0 0 0 / 0.04), 0 1px 1px oklch(0 0 0 / 0.02);
+  --shadow-hover: 0 4px 12px oklch(0 0 0 / 0.06), 0 2px 4px oklch(0 0 0 / 0.04);
+}
+
+html[data-atmosphere="night"] {
+  --background:       oklch(0.978 0.004 78);
+  --primary:          oklch(0.520 0.110 277);
+  --muted-foreground: oklch(0.500 0.018 255);
+  --border:           oklch(0.945 0.005 80);
+  --input:            oklch(0.945 0.005 80);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -271,6 +292,7 @@
   html {
     @apply font-sans;
     color-scheme: light;
+    overscroll-behavior: none;
   }
 
   body {
@@ -278,8 +300,10 @@
     font-size: 16px;
     line-height: 1.7;
     font-feature-settings: "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-y: none;
   }
 
   h1, h2, h3, h4, h5, h6 {

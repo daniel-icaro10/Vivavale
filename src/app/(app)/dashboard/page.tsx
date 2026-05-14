@@ -7,6 +7,7 @@ import { InsightsStrip } from "@/features/dashboard/components/InsightsStrip";
 import { GuidanceCard } from "@/features/dashboard/components/GuidanceCard";
 import { RecentActivity } from "@/features/dashboard/components/RecentActivity";
 import { AtmosphereHero } from "@/features/dashboard/components/AtmosphereHero";
+import { getEmotionalPresence } from "@/features/dashboard/utils/getEmotionalPresence";
 
 export const metadata: Metadata = {
   title: "Início",
@@ -33,8 +34,6 @@ type DashboardMode =
 type DashboardData = NonNullable<Awaited<ReturnType<typeof getDashboardData>>>;
 
 // ─── Ambient state ────────────────────────────────────────
-// Camada de inteligência silenciosa — ajusta ritmo e densidade
-// de forma imperceptível, respondendo ao estado emocional inferido.
 type AmbientState = "sparse" | "recovering" | "stable" | "calm" | "reflective";
 
 function getAmbientState(mode: DashboardMode): AmbientState {
@@ -47,25 +46,16 @@ function getAmbientState(mode: DashboardMode): AmbientState {
   }
 }
 
-// Timing de entrada adaptativo: usuários em recuperação recebem
-// transições mais lentas e respiráveis (300ms vs 200ms).
 function enterDuration(ambient: AmbientState): string {
   return ambient === "recovering" ? "duration-300" : "duration-200";
 }
 
 // ─── Adaptive mode ────────────────────────────────────────
 function getDashboardMode(data: DashboardData): DashboardMode {
-  const { hasMedications, todayLog, daysThisWeek, lastLogDate, todayStr } = data;
+  const { hasMedications, todayLog, daysThisWeek, daysSinceLastLog } = data;
 
   if (!hasMedications) return "onboarding";
-
-  if (lastLogDate) {
-    const daysSince = Math.floor(
-      (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
-    );
-    if (daysSince >= 5) return "recovery";
-  }
-
+  if (daysSinceLastLog !== null && daysSinceLastLog >= 5) return "recovery";
   if (daysThisWeek === 0) return "encouragement";
   if (todayLog && daysThisWeek >= 4) return "continuity";
 
@@ -80,46 +70,6 @@ function getNextLikelyAction(data: DashboardData, mode: DashboardMode): NextActi
   if (data.hasMedications && !data.hasReminders) return "manage_reminders";
   if (data.todayLog && data.daysThisWeek >= 3) return "review_week";
   return "reflect";
-}
-
-// ─── Contextual continuity message ───────────────────────
-function getContinuityContext(data: DashboardData, mode: DashboardMode): string {
-  const { todayLog, daysThisWeek, lastLogDate, todayStr } = data;
-
-  switch (mode) {
-    case "onboarding":
-      return "Pronto para começar o seu acompanhamento.";
-
-    case "recovery": {
-      const daysSince = lastLogDate
-        ? Math.floor(
-            (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
-          )
-        : null;
-      return daysSince && daysSince <= 14
-        ? "É bom ter você por aqui de novo."
-        : "Quando quiser retomar, estamos por aqui.";
-    }
-
-    case "encouragement":
-      return "Cada registro conta, mesmo que seja o primeiro da semana.";
-
-    case "continuity":
-      if (daysThisWeek >= 6) return `${daysThisWeek} dias registrados esta semana — os padrões ficam mais claros assim.`;
-      if (daysThisWeek >= 4) return "Você está presente e isso faz diferença.";
-      return "Boa sequência essa semana.";
-
-    case "reflection":
-      if (todayLog) return "Bom saber como você está hoje.";
-      if (lastLogDate) {
-        const daysSince = Math.floor(
-          (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
-        );
-        if (daysSince <= 1) return "Como está sendo esse dia?";
-        if (daysSince <= 4) return "Quando quiser registrar, estamos por aqui.";
-      }
-      return "Como você está?";
-  }
 }
 
 // ─── Date helpers ─────────────────────────────────────────
@@ -186,10 +136,13 @@ async function getDashboardData() {
   const recentLogs = recentLogsResult.data ?? [];
   const lastLogDate = recentLogs[0]?.date ?? null;
   const daysThisWeek = recentLogs.filter((l) => l.date >= sevenDaysAgoStr).length;
+  const totalLogsProxy = recentLogs.length; // 0-10 proxy; 10 = "10 ou mais"
 
-  const hasMedications = activeMedicationsCount > 0;
-  const hasReminders = activeRemindersCount > 0;
-  const hasLoggedThisWeek = daysThisWeek > 0;
+  const daysSinceLastLog = lastLogDate
+    ? Math.floor(
+        (new Date(todayStr).getTime() - new Date(lastLogDate).getTime()) / 86_400_000,
+      )
+    : null;
 
   return {
     profile: profileResult.data,
@@ -198,9 +151,11 @@ async function getDashboardData() {
     activeRemindersCount,
     daysThisWeek,
     lastLogDate,
-    hasMedications,
-    hasReminders,
-    hasLoggedThisWeek,
+    daysSinceLastLog,
+    totalLogsProxy,
+    hasMedications: activeMedicationsCount > 0,
+    hasReminders: activeRemindersCount > 0,
+    hasLoggedThisWeek: daysThisWeek > 0,
     todayStr,
   };
 }
@@ -216,10 +171,17 @@ export default async function DashboardPage() {
   const nextAction = getNextLikelyAction(data, mode);
   const firstName = data.profile?.name?.split(" ")[0];
   const dateLabel = formatDatePt(data.todayStr);
-  const contextMessage = getContinuityContext(data, mode);
+
+  // Presença emocional — substitui getContinuityContext
+  const contextMessage = getEmotionalPresence({
+    daysSinceLastLog: data.daysSinceLastLog,
+    totalLogs: data.totalLogsProxy,
+    daysThisWeek: data.daysThisWeek,
+    hasLoggedToday: data.todayLog !== null,
+  }).phrase;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Hero — contextual + atmosphere-aware (client) */}
       <AtmosphereHero
         contextMessage={contextMessage}
@@ -328,8 +290,7 @@ export default async function DashboardPage() {
       {/* Perfil */}
       <Link
         href="/profile"
-        className={`flex items-center justify-between rounded-2xl bg-card px-5 py-4 float-hover active:scale-[0.985] animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-300`}
-
+        className={`flex items-center justify-between rounded-2xl bg-card px-5 py-4 float-hover active:scale-[0.985] animate-in fade-in-0 slide-in-from-bottom-2 ${dur} anim-delay-375`}
         style={{ border: "1px solid oklch(0.940 0.007 85)" }}
         aria-label={`Perfil de ${data.profile?.name ?? "usuário"}`}
       >
@@ -339,7 +300,7 @@ export default async function DashboardPage() {
             {data.profile?.name ?? "Suas informações"}
           </p>
         </div>
-        <span className="text-xl leading-none text-muted-foreground/50" aria-hidden="true">
+        <span className="text-xl leading-none text-muted-foreground/40" aria-hidden="true">
           ›
         </span>
       </Link>

@@ -19,8 +19,8 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação principal"
-      className="fixed bottom-0 left-0 right-0 z-50 bg-card/95 backdrop-blur-sm border-t border-border pb-[env(safe-area-inset-bottom)]"
-      style={{ boxShadow: "0 -1px 0 oklch(0 0 0 / 0.04), 0 -4px 16px oklch(0 0 0 / 0.04)" }}
+      className="fixed bottom-0 left-0 right-0 z-50 bg-card/96 backdrop-blur border-t border-border/60 pb-[env(safe-area-inset-bottom)]"
+      style={{ boxShadow: "0 -1px 0 oklch(0 0 0 / 0.03), 0 -4px 20px oklch(0 0 0 / 0.04)" }}
     >
       <ul className="flex items-stretch max-w-lg mx-auto">
         {navItems.map(({ href, label, icon: Icon }) => {
@@ -32,33 +32,35 @@ export function BottomNav() {
                 href={href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "relative flex flex-1 flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium tracking-wide transition-colors",
-                  "min-h-[60px] touch-manipulation",
+                  "relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] tracking-wide transition-colors duration-150",
+                  "min-h-[64px] touch-manipulation",
                   isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "text-primary font-semibold"
+                    : "text-muted-foreground/60 font-medium hover:text-muted-foreground",
                 )}
               >
-                {/* Indicador ativo: linha superior sutil */}
+                {/* Indicador ativo: pequeno traço premium acima do ícone */}
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute top-0 left-1/2 -translate-x-1/2 h-0.5 w-8 rounded-full bg-primary"
+                    className="absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-5 rounded-full bg-primary/80"
                   />
                 )}
                 <span
                   className={cn(
-                    "flex items-center justify-center transition-transform duration-150 ease-out",
+                    "flex items-center justify-center transition-all duration-200 ease-out",
                     isActive && "-translate-y-px",
                   )}
                 >
                   <Icon
                     size={20}
-                    strokeWidth={isActive ? 2.2 : 1.7}
+                    strokeWidth={isActive ? 2.1 : 1.6}
                     aria-hidden="true"
                   />
                 </span>
-                <span>{label}</span>
+                <span className={cn("transition-colors duration-150", !isActive && "opacity-60")}>
+                  {label}
+                </span>
               </Link>
             </li>
           );
