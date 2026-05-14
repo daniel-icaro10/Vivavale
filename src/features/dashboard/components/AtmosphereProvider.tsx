@@ -2,14 +2,15 @@
 
 import { useEffect } from "react";
 import { getDayAtmosphere } from "../utils/getDayAtmosphere";
+import { syncStatusBar, type AtmosphereTime } from "@/lib/native/statusBar";
+import { initLifecycle } from "@/lib/lifecycle";
 
 export type UserPresence = "sparse" | "returning" | "steady" | "consistent";
 export type JourneyState = "beginning" | "building" | "established" | "returning-deep";
 
 // Injeta data-atmosphere, data-presence e data-journey no <html>.
-// data-atmosphere → período do dia
-// data-presence   → ritmo comportamental do usuário
-// data-journey    → profundidade histórica da jornada
+// Sincroniza status bar nativa com o período do dia.
+// Inicializa lifecycle (visibilitychange + Capacitor App events).
 export function AtmosphereProvider({
   presence = "steady",
   journey,
@@ -19,7 +20,9 @@ export function AtmosphereProvider({
 }) {
   useEffect(() => {
     const el = document.documentElement;
-    el.dataset.atmosphere = getDayAtmosphere(new Date().getHours());
+    const atmosphere = getDayAtmosphere(new Date().getHours()) as AtmosphereTime;
+
+    el.dataset.atmosphere = atmosphere;
 
     if (presence !== "steady") {
       el.dataset.presence = presence;
@@ -33,10 +36,17 @@ export function AtmosphereProvider({
       delete el.dataset.journey;
     }
 
+    // Sincroniza status bar nativa com atmosfera
+    syncStatusBar(atmosphere);
+
+    // Inicializa lifecycle (splash hide + resume handlers + Capacitor App)
+    const cleanupLifecycle = initLifecycle();
+
     return () => {
       delete el.dataset.atmosphere;
       delete el.dataset.presence;
       delete el.dataset.journey;
+      cleanupLifecycle();
     };
   }, [presence, journey]);
 

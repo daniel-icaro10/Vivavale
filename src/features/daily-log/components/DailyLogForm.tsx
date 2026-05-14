@@ -12,6 +12,7 @@ import { dailyLogSchema, type DailyLogFormData } from "../schemas";
 import type { SaveStatus } from "../types";
 import { DailyLogHeader } from "./DailyLogHeader";
 import { SaveIndicator } from "./SaveIndicator";
+import { haptics } from "@/lib/haptics";
 
 // Grupos emocionais — reduz carga cognitiva, cria narrativa visual
 const PHYSICAL_FIELDS = [
@@ -121,17 +122,21 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
   const onSubmit = async (data: DailyLogFormData) => {
     setSaveStatus("saving");
     setErrorMessage(undefined);
+    haptics.lightImpact();
     try {
       const result = await saveDailyLogAction(data);
       if ("error" in result) {
         setSaveStatus("error");
         setErrorMessage(result.error);
+        haptics.warning();
       } else {
         setSaveStatus("success");
+        haptics.success();
       }
     } catch {
       setSaveStatus("error");
       setErrorMessage("Não foi possível salvar. Tente novamente.");
+      haptics.warning();
     }
   };
 
@@ -229,6 +234,10 @@ export function DailyLogForm({ recentLog }: DailyLogFormProps) {
                 maxLength={1000}
                 aria-invalid={!!errors.notes}
                 className="resize-none leading-relaxed px-3.5 py-3 mt-2 text-[15px]"
+                onFocus={(e) => {
+                  // iOS: scroll até o campo ao abrir teclado
+                  setTimeout(() => e.target.scrollIntoView({ behavior: "smooth", block: "center" }), 320);
+                }}
                 {...register("notes")}
               />
               {errors.notes && (

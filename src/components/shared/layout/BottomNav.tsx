@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ClipboardList, Activity, Pill, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { haptics } from "@/lib/haptics";
 
 const navItems = [
   { href: "/dashboard",   label: "Início",    icon: Home },
@@ -31,6 +32,7 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-current={isActive ? "page" : undefined}
+                onClick={() => haptics.selection()}
                 className={cn(
                   "relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[11px] tracking-wide transition-colors duration-200",
                   "min-h-[64px] touch-manipulation",

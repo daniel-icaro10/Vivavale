@@ -1,14 +1,25 @@
-// App lifecycle — handles visibility changes for silent background sync.
-// Call initLifecycle() once from a client layout. Cleans up on unmount.
+// App lifecycle — visibilitychange web + App events Capacitor.
+// Call initLifecycle() once from a client component. Cleans up on unmount.
+
+import { Capacitor } from "@capacitor/core";
 
 type LifecycleHandler = () => void;
 
 const resumeHandlers: Set<LifecycleHandler> = new Set();
+const pauseHandlers:  Set<LifecycleHandler> = new Set();
 
 export function onResume(handler: LifecycleHandler): () => void {
   resumeHandlers.add(handler);
   return () => resumeHandlers.delete(handler);
 }
+
+export function onPause(handler: LifecycleHandler): () => void {
+  pauseHandlers.add(handler);
+  return () => pauseHandlers.delete(handler);
+}
+
+function fireResume() { resumeHandlers.forEach((h) => h()); }
+function firePause()  { pauseHandlers.forEach((h) => h()); }
 
 let initialized = false;
 
@@ -16,21 +27,40 @@ export function initLifecycle(): () => void {
   if (initialized || typeof document === "undefined") return () => {};
   initialized = true;
 
-  let hidden = document.visibilityState === "hidden";
+  const cleanups: Array<() => void> = [];
+
+  // ── Web: visibilitychange ───────────────────────────────
+  let wasHidden = document.visibilityState === "hidden";
 
   const handleVisibility = () => {
     const nowHidden = document.visibilityState === "hidden";
-    if (hidden && !nowHidden) {
-      // App resumed from background — notify all registered handlers
-      resumeHandlers.forEach((h) => h());
-    }
-    hidden = nowHidden;
+    if (wasHidden && !nowHidden) fireResume();
+    if (!wasHidden && nowHidden)  firePause();
+    wasHidden = nowHidden;
   };
 
   document.addEventListener("visibilitychange", handleVisibility);
+  cleanups.push(() => document.removeEventListener("visibilitychange", handleVisibility));
+
+  // ── Native: Capacitor App events ────────────────────────
+  if (Capacitor.isNativePlatform()) {
+    import("@capacitor/app").then(({ App }) => {
+      App.addListener("appStateChange", ({ isActive }) => {
+        if (isActive) fireResume();
+        else          firePause();
+      }).then((handle) => {
+        cleanups.push(() => handle.remove());
+      });
+
+      // Splash screen — hide após primeira montagem do app
+      import("@capacitor/splash-screen").then(({ SplashScreen }) => {
+        SplashScreen.hide({ fadeOutDuration: 600 }).catch(() => null);
+      }).catch(() => null);
+    }).catch(() => null);
+  }
 
   return () => {
-    document.removeEventListener("visibilitychange", handleVisibility);
+    cleanups.forEach((fn) => fn());
     initialized = false;
   };
 }

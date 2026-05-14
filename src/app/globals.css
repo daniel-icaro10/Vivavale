@@ -433,14 +433,29 @@ html[data-performance="reduced"] .vl-breathe {
 html[data-performance="reduced"] [class*="backdrop-blur"] {
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
+  background-color: var(--card);
 }
 
 html[data-performance="reduced"] [class*="animate-in"] {
-  animation-duration: 100ms !important;
+  animation-duration: 80ms !important;
 }
 
 html[data-performance="reduced"] * {
-  transition-duration: 80ms !important;
+  transition-duration: 60ms !important;
+}
+
+/* Remove shadow layers pesados em modo reduced */
+html[data-performance="reduced"] .shadow-card {
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+html[data-performance="reduced"] [class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+/* Simplifica gradientes atmosféricos */
+html[data-performance="reduced"] [style*="--ambient-glow"] {
+  --ambient-glow: transparent;
 }
 
 /* ─── Premium details — scrollbar, selection, mask ────────── */
@@ -552,5 +567,53 @@ html[data-performance="reduced"] * {
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+
+  /* ── Native feel: inertial scroll + touch refinements ─────── */
+
+  /* Momentum scroll nativo em containers scroll */
+  [class*="overflow-y-auto"],
+  [class*="overflow-y-scroll"],
+  main {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Reduz latência de tap em iOS (300 ms delay eliminado) */
+  * {
+    touch-action: manipulation;
+  }
+
+  /* Restaura scroll vertical natural onde necessário */
+  main,
+  [data-scroll="y"] {
+    touch-action: pan-y;
+  }
+
+  /* Overscroll natural: elástico no topo/fundo como app nativo */
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  /* Remove outline no tap mobile (já tratado com :focus-visible) */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* ── Targets mínimos de acessibilidade mobile (44 × 44px) ─── */
+  button,
+  [role="button"],
+  a,
+  input[type="checkbox"],
+  input[type="radio"],
+  label[for] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Exceção para labels inline e ícones decorativos */
+  .vl-eyebrow,
+  [aria-hidden="true"] {
+    min-height: unset;
+    min-width: unset;
   }
 }
